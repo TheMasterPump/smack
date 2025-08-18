@@ -3,8 +3,9 @@ const webpack = require("webpack");
 module.exports = function override(config, env) {
   config.resolve = {
     ...config.resolve,
-    extensionAlias: {
-      ".js": [".js", ".ts", ".tsx"]
+    alias: {
+      ...(config.resolve.alias || {}),
+      "process/browser": require.resolve("process/browser.js"),
     },
     fallback: {
       ...(config.resolve ? config.resolve.fallback : {}),
