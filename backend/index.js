@@ -1320,6 +1320,164 @@ app.get('/api/vip/wallet/:address', async (req, res) => {
 // FIN VIP ENDPOINTS
 // ===============================
 
+// ========== ENDPOINT POUR STOCKER LES CLICS DE BOUTON DANS FIREBASE ==========
+app.post('/api/button-click', async (req, res) => {
+  try {
+    const { tokenSlug, buttonLabel, buttonHref } = req.body;
+
+    // Validation des données
+    if (!tokenSlug || !buttonLabel || !buttonHref) {
+      return res.status(400).json({
+        success: false,
+        message: 'Missing required fields: tokenSlug, buttonLabel, buttonHref'
+      });
+    }
+
+    // Récupérer l'IP de l'utilisateur
+    const userIP = req.ip || req.connection.remoteAddress || req.headers['x-forwarded-for'] || 'unknown';
+    const userAgent = req.headers['user-agent'] || '';
+
+    // Créer l'enregistrement du clic dans Firebase
+    const clickData = {
+      tokenSlug: tokenSlug.trim(),
+      buttonLabel: buttonLabel.trim(),
+      buttonHref: buttonHref.trim(),
+      userIp: userIP,
+      userAgent: userAgent,
+      timestamp: new Date().toISOString(),
+      createdAt: Date.now()
+    };
+
+    // Sauvegarder dans Firebase
+    const clickRef = await db.collection('button-clicks').add(clickData);
+
+    console.log(`📊 Button click saved to Firebase: ${tokenSlug} -> ${buttonLabel} (${userIP})`);
+
+    res.status(201).json({
+      success: true,
+      message: 'Button click recorded successfully in Firebase',
+      data: {
+        id: clickRef.id,
+        tokenSlug,
+        buttonLabel,
+        timestamp: clickData.timestamp
+      }
+    });
+
+  } catch (error) {
+    console.error('❌ Error recording button click in Firebase:', error);
+    res.status(500).json({
+      success: false,
+      message: 'Error recording button click',
+      error: error.message
+    });
+  }
+});
+
+// ========== ENDPOINT POUR OBTENIR LES STATISTIQUES DES CLICS DEPUIS FIREBASE ==========
+app.get('/api/button-clicks/:tokenSlug', async (req, res) => {
+  try {
+    const { tokenSlug } = req.params;
+    const { timeframe = '24h' } = req.query;
+
+    // Calculer la date de début selon le timeframe
+    let startTime;
+    switch (timeframe) {
+      case '1h':
+        startTime = Date.now() - (60 * 60 * 1000);
+        break;
+      case '24h':
+        startTime = Date.now() - (24 * 60 * 60 * 1000);
+        break;
+      case '7d':
+        startTime = Date.now() - (7 * 24 * 60 * 60 * 1000);
+        break;
+      case '30d':
+        startTime = Date.now() - (30 * 24 * 60 * 60 * 1000);
+        break;
+      default:
+        startTime = Date.now() - (24 * 60 * 60 * 1000);
+    }
+
+    // Récupérer les clics depuis Firebase
+    const clicksQuery = db.collection('button-clicks')
+      .where('tokenSlug', '==', tokenSlug)
+      .where('createdAt', '>=', startTime)
+      .orderBy('createdAt', 'desc');
+
+    const snapshot = await clicksQuery.get();
+    
+    if (snapshot.empty) {
+      return res.json({
+        success: true,
+        data: {
+          tokenSlug,
+          timeframe,
+          stats: {
+            totalClicks: 0,
+            uniqueUsers: 0,
+            clicksByButton: []
+          }
+        }
+      });
+    }
+
+    // Traiter les données
+    const clicks = [];
+    const uniqueIPs = new Set();
+    const buttonStats = {};
+
+    snapshot.forEach(doc => {
+      const data = doc.data();
+      clicks.push(data);
+      uniqueIPs.add(data.userIp);
+      
+      const buttonKey = `${data.buttonLabel}|${data.buttonHref}`;
+      if (!buttonStats[buttonKey]) {
+        buttonStats[buttonKey] = {
+          buttonLabel: data.buttonLabel,
+          buttonHref: data.buttonHref,
+          clicks: 0,
+          lastClick: data.timestamp
+        };
+      }
+      buttonStats[buttonKey].clicks++;
+      
+      // Garder le clic le plus récent
+      if (data.timestamp > buttonStats[buttonKey].lastClick) {
+        buttonStats[buttonKey].lastClick = data.timestamp;
+      }
+    });
+
+    // Convertir en tableau et trier par nombre de clics
+    const clicksByButton = Object.values(buttonStats)
+      .sort((a, b) => b.clicks - a.clicks);
+
+    console.log(`📊 Button click stats for ${tokenSlug}: ${clicks.length} clicks, ${uniqueIPs.size} unique users`);
+
+    res.json({
+      success: true,
+      data: {
+        tokenSlug,
+        timeframe,
+        stats: {
+          totalClicks: clicks.length,
+          uniqueUsers: uniqueIPs.size,
+          clicksByButton
+        }
+      }
+    });
+
+  } catch (error) {
+    console.error('❌ Error fetching button click stats from Firebase:', error);
+    res.status(500).json({
+      success: false,
+      message: 'Error fetching button click statistics',
+      error: error.message
+    });
+  }
+});
+
 // Démarrer la simulation d'activité toutes les 3 secondes
 setInterval(simulateMarketActivity, 3000);
 
