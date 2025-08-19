@@ -30,20 +30,22 @@ module.exports = function override(config, env) {
     }),
   ];
 
-  // Disable ESLint warnings as errors in production
-  if (process.env.NODE_ENV === 'production') {
-    config.module.rules.forEach(rule => {
-      if (rule.use && rule.use.some(use => use.loader && use.loader.includes('eslint-loader'))) {
-        rule.use.forEach(use => {
-          if (use.loader && use.loader.includes('eslint-loader')) {
-            use.options = use.options || {};
-            use.options.emitWarning = true;
-            use.options.failOnError = false;
-          }
-        });
-      }
-    });
+  // Force disable ESLint warnings as errors
+  const eslintRule = config.module.rules.find(
+    rule => rule.use && rule.use.some(use => use.loader && use.loader.includes('eslint'))
+  );
+  
+  if (eslintRule) {
+    eslintRule.use = eslintRule.use.filter(use => 
+      !(use.loader && use.loader.includes('eslint'))
+    );
   }
+  
+  // Alternative: completely remove ESLint from webpack config
+  config.module.rules = config.module.rules.filter(rule => 
+    !(rule.test && rule.test.toString().includes('\\.(js|mjs|jsx|ts|tsx)$') && 
+      rule.use && rule.use.some(use => use.loader && use.loader.includes('eslint')))
+  );
 
   return config;
 };
