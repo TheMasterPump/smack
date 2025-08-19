@@ -35,7 +35,7 @@ app.post('/api/vip/register-wallet', async (req, res) => {
       smackedSeconds, 
       totalClicks, 
       sessionId, 
-      userAgent 
+      userAgent
     } = req.body;
 
     if (!wallet || !sessionId || smackedSeconds === undefined) {

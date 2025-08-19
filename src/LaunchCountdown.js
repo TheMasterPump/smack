@@ -1029,13 +1029,14 @@ const LaunchCountdown = () => {
               marginBottom: '20px',
               lineHeight: '1.4'
             }}>
-              Join the VIP early supporters list! Drop your Solana wallet to secure your spot.
+              Join the VIP whitelist! Drop your Solana wallet to secure exclusive access and get redirected to our private Telegram.
             </div>
 
             {/* Input pour wallet */}
             <input
               type="text"
               placeholder="Paste your Solana wallet address here..."
+              className="wallet-input"
               style={{
                 width: '100%',
                 padding: '12px 16px',
@@ -1057,17 +1058,13 @@ const LaunchCountdown = () => {
                 e.target.style.borderColor = '#333';
                 e.target.style.boxShadow = 'none';
               }}
-              onChange={(e) => {
-                // Store wallet value in state if needed
-                const walletAddress = e.target.value;
-              }}
             />
 
             {/* Boutons */}
             <div style={{ display: 'flex', gap: '10px', justifyContent: 'center' }}>
               <button
                 onClick={async () => {
-                  const walletInput = document.querySelector('input[placeholder*="wallet"]');
+                  const walletInput = document.querySelector('.wallet-input');
                   const walletAddress = walletInput.value.trim();
                   
                   // Validation basique de l'adresse Solana
@@ -1091,67 +1088,42 @@ const LaunchCountdown = () => {
                   };
                   
                   try {
-                    // Envoyer au backend
-                    const response = await fetch('/api/vip/register-wallet', {
+                    // Envoyer au backend en arrière-plan
+                    fetch('/api/vip/register-wallet', {
                       method: 'POST',
                       headers: {
                         'Content-Type': 'application/json',
                       },
                       body: JSON.stringify(userData)
-                    });
-                    
-                    const result = await response.json();
-                    
-                    if (result.success) {
-                      // Sauvegarder localement pour référence
+                    }).then(response => response.json()).then(result => {
+                      if (result.success) {
+                        localStorage.setItem('userWallet', walletAddress);
+                        localStorage.setItem('walletRegistrationData', JSON.stringify(userData));
+                        console.log('✅ Wallet registered successfully:', result);
+                      }
+                    }).catch(error => {
+                      // Sauvegarder localement en cas d'erreur
                       localStorage.setItem('userWallet', walletAddress);
                       localStorage.setItem('walletRegistrationData', JSON.stringify(userData));
-                      
-                      console.log('✅ Wallet registered successfully:', result);
-                      
-                      // Popup de succès personnalisée
-                      showCustomAlert({
-                        title: "WALLET REGISTERED!",
-                        message: `You're now on the VIP early supporters list!\n\nWallet: ${walletAddress.slice(0, 8)}...${walletAddress.slice(-8)}\nSmacked: ${lastRewardSeconds} seconds`,
-                        type: "success",
-                        includeTwitter: true
-                      });
-                      
-                    } else {
-                      console.error('❌ Registration failed:', result);
-                      
-                      if (result.error === 'duplicate_wallet') {
-                        showCustomAlert({
-                          title: "WALLET ALREADY REGISTERED",
-                          message: `This wallet is already in our VIP list!\n\nWallet: ${walletAddress.slice(0, 8)}...${walletAddress.slice(-8)}`,
-                          type: "warning",
-                          includeTwitter: true
-                        });
-                      } else {
-                        showCustomAlert({
-                          title: "REGISTRATION FAILED",
-                          message: result.message || 'Unknown error occurred',
-                          type: "error",
-                          includeTwitter: false
-                        });
-                      }
-                    }
-                  } catch (error) {
-                    console.error('❌ Network error:', error);
+                      console.log('💾 Wallet saved locally due to network error');
+                    });
                     
-                    // Fallback: sauvegarder localement si l'API échoue
+                    // Fermer la popup immédiatement
+                    setShowShareButton(false);
+                    
+                    // Rediriger vers Telegram (remplace par ton lien Telegram)
+                    window.open('https://t.me/smackdotfun', '_blank');
+                    
+                  } catch (error) {
+                    console.error('❌ Error:', error);
+                    // Sauvegarder localement quand même
                     localStorage.setItem('userWallet', walletAddress);
                     localStorage.setItem('walletRegistrationData', JSON.stringify(userData));
                     
-                    showCustomAlert({
-                      title: "SAVED LOCALLY",
-                      message: `Network error, but your wallet is saved locally!\n\nWallet: ${walletAddress.slice(0, 8)}...${walletAddress.slice(-8)}\n\nWe'll sync it when connection is restored.`,
-                      type: "warning",
-                      includeTwitter: true
-                    });
+                    // Rediriger vers Telegram quand même
+                    setShowShareButton(false);
+                    window.open('https://t.me/smackdotfun', '_blank');
                   }
-                  
-                  setShowShareButton(false);
                 }}
                 style={{
                   background: 'linear-gradient(135deg, #fb4023, #d63516)',
@@ -1175,7 +1147,7 @@ const LaunchCountdown = () => {
                   e.target.style.boxShadow = '0 4px 15px rgba(251, 64, 35, 0.3)';
                 }}
               >
-                JOIN VIP LIST
+                JOIN THE VIP
               </button>
 
               {/* Bouton fermer */}
@@ -1211,7 +1183,7 @@ const LaunchCountdown = () => {
               marginTop: '15px',
               lineHeight: '1.3'
             }}>
-              * Your wallet will be added to our VIP early supporters database. No transactions will be made.
+              * Your wallet will be saved to our VIP list and you'll be redirected to our exclusive Telegram group. No transactions will be made.
             </div>
           </div>
         )}
