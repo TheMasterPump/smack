@@ -31,6 +31,15 @@ app.use(rateLimit({
 app.use("/api", uploadRouter);
 app.use('/api/report', reportRouter);
 
+// Health check endpoint for Railway
+app.get('/health', (req, res) => {
+  res.status(200).json({ 
+    status: 'OK', 
+    timestamp: new Date().toISOString(),
+    service: 'SMACK Backend API'
+  });
+});
+
 // Endpoint pour sauvegarder les clics du bouton countdown
 app.post('/api/analytics/button-clicks', async (req, res) => {
   try {
@@ -1314,8 +1323,8 @@ app.get('/api/vip/wallet/:address', async (req, res) => {
 // Démarrer la simulation d'activité toutes les 3 secondes
 setInterval(simulateMarketActivity, 3000);
 
-const PORT = 4000;
-server.listen(PORT, () => {
-  console.log("API backend & chat running on http://localhost:" + PORT);
+const PORT = process.env.PORT || 4000;
+server.listen(PORT, '0.0.0.0', () => {
+  console.log("API backend & chat running on port " + PORT);
   console.log("🔥 Live market simulation started - charts will update every 3 seconds");
 });
