@@ -76,6 +76,44 @@
   min-width: auto;
 }
 
+/* Section wallet et social dans le menu mobile */
+.mobile-menu-wallet-section {
+  margin-top: 25px;
+  padding-top: 20px;
+  border-top: 1px solid #333;
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 20px;
+}
+
+.mobile-menu-wallet {
+  flex: 1;
+  text-align: left;
+}
+
+.mobile-menu-social {
+  text-align: center;
+}
+
+.wallet-button-container {
+  margin-top: 5px;
+}
+
+.wallet-button-container .wallet-adapter-button {
+  font-size: 14px !important;
+  padding: 10px 16px !important;
+  border-radius: 8px !important;
+  width: 100% !important;
+  max-width: none !important;
+  min-width: auto !important;
+}
+
+.mobile-x-button:hover {
+  transform: scale(1.1) !important;
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.5) !important;
+}
+
 .main-menu-item {
   background: #181B24;
   color: #fff;
