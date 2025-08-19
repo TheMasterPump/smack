@@ -300,7 +300,7 @@ const LaunchCountdown = () => {
             letterSpacing: '6px',
             fontFamily: '"SevenSegment", "Digital-7", "SegmentedDisplay", monospace'
           }} className="countdown-labels">
-            <div style={{ width: '100px', textAlign: 'center', fontSize: '16px' }}>DAYS</div>
+            <div style={{ width: '100px', textAlign: 'center' }}>DAYS</div>
             <div style={{ width: '20px', textAlign: 'center', opacity: 0 }}>:</div>
             <div style={{ width: '100px', textAlign: 'center' }}>HOURS</div>
             <div style={{ width: '20px', textAlign: 'center', opacity: 0 }}>:</div>
@@ -1791,6 +1791,14 @@ const LaunchCountdown = () => {
                 flex: 1 !important;
               }
               
+              /* Force uniform size for all labels */
+              .countdown-labels > div:first-child,
+              .countdown-labels > div:nth-child(3),
+              .countdown-labels > div:nth-child(5),
+              .countdown-labels > div:nth-child(7) {
+                font-size: 11px !important;
+              }
+              
               .smack-logo {
                 max-width: 180px !important;
                 margin-top: -20px !important;
@@ -1870,6 +1878,14 @@ const LaunchCountdown = () => {
                 font-size: 9px !important;
                 text-align: center !important;
                 flex: 1 !important;
+              }
+              
+              /* Force uniform size for all labels on small mobile */
+              .countdown-labels > div:first-child,
+              .countdown-labels > div:nth-child(3),
+              .countdown-labels > div:nth-child(5),
+              .countdown-labels > div:nth-child(7) {
+                font-size: 9px !important;
               }
               
               .smack-logo {
