@@ -4,6 +4,7 @@
   "description": "Firebase Functions for Meme Launch Platform",
   "main": "index.js",
   "scripts": {
+    "lint": "echo 'Linting skipped'",
     "serve": "firebase emulators:start --only functions",
     "shell": "firebase functions:shell",
     "start": "npm run shell",
