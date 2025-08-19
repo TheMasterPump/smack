@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from 'react';
 import MainNavigation from './MainNavigation';
-import io from 'socket.io-client';
 
 const LaunchCountdown = () => {
   // 🚀 Date de lancement - SAMEDI 23H (Mettre une date future!)
@@ -52,7 +51,6 @@ const LaunchCountdown = () => {
     totalUsers: 0,
     formattedTimeReduced: '0m 0s'
   });
-  const [socket, setSocket] = useState(null);
 
   useEffect(() => {
     const timer = setInterval(() => {
@@ -120,23 +118,18 @@ const LaunchCountdown = () => {
     }, 8000);
   };
 
-  // Gérer Socket.IO pour le compteur global temps réel
+  // Charger les stats globales depuis Firebase
   useEffect(() => {
-    // Connexion Socket.IO
-    const newSocket = io('http://localhost:4000');
-    setSocket(newSocket);
-
-    // Charger les stats globales initiales
     const loadGlobalStats = async () => {
       try {
         const response = await fetch('/api/global-counter');
         const data = await response.json();
         if (data.success) {
           setGlobalStats({
-            totalClicks: data.data.totalClicks || '0',
-            totalTimeReduced: data.data.totalTimeReduced?.minutes * 60 + data.data.totalTimeReduced?.seconds || 0,
-            totalUsers: data.data.totalUsers || '0',
-            formattedTimeReduced: data.data.totalTimeReduced?.formatted || '0m 0s'
+            totalClicks: data.globalStats.totalClicks || 0,
+            totalTimeReduced: data.globalStats.totalTimeReduced || 0,
+            totalUsers: 0,
+            formattedTimeReduced: data.globalStats.formattedTimeReduced || '0m 0s'
           });
         }
       } catch (error) {
@@ -145,21 +138,11 @@ const LaunchCountdown = () => {
     };
 
     loadGlobalStats();
-
-    // Écouter les mises à jour temps réel du compteur global
-    newSocket.on('globalCounter', (data) => {
-      setGlobalStats({
-        totalClicks: data.totalClicks.toLocaleString(),
-        totalTimeReduced: data.totalTimeReduced,
-        totalUsers: data.totalUsers.toLocaleString(),
-        formattedTimeReduced: data.formattedTimeReduced
-      });
-    });
-
-    // Nettoyage à la déconnexion
-    return () => {
-      newSocket.close();
-    };
+    
+    // Recharger les stats toutes les 5 secondes pour simulation temps réel
+    const interval = setInterval(loadGlobalStats, 5000);
+    
+    return () => clearInterval(interval);
   }, []);
 
   // Styles inspirés de UserProfile.css
@@ -413,7 +396,7 @@ const LaunchCountdown = () => {
 
                   {/* Bouton 3D complet */}
                   <div 
-                    onClick={() => {
+                    onClick={async () => {
                       // Incrémenter le compteur de clics
                       const newClickCount = clickCount + 1;
                       setClickCount(newClickCount);
@@ -652,6 +635,31 @@ const LaunchCountdown = () => {
                         setTimeout(() => {
                           setSideMessages(prev => prev.filter(msg => msg.id !== encouragementMessage.id));
                         }, 1500);
+                      }
+                      
+                      // Envoyer le SMACK à Firebase
+                      if (reductionSeconds > 0) {
+                        try {
+                          const smackResponse = await fetch('/api/smack', {
+                            method: 'POST',
+                            headers: {
+                              'Content-Type': 'application/json',
+                            },
+                            body: JSON.stringify({
+                              timeReduced: reductionSeconds,
+                              sessionId: sessionId,
+                              userAgent: navigator.userAgent
+                            })
+                          });
+                          
+                          const smackResult = await smackResponse.json();
+                          if (smackResult.success) {
+                            // Mettre à jour les stats globales avec les nouvelles données
+                            setGlobalStats(smackResult.data.globalStats);
+                          }
+                        } catch (error) {
+                          console.log('Could not send SMACK to Firebase:', error);
+                        }
                       }
                       
                       // Sauvegarder les données

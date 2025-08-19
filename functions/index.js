@@ -187,6 +187,135 @@ app.post('/api/button-click', async (req, res) => {
   }
 });
 
+// ========== GLOBAL SMACK COUNTER ==========
+app.post('/api/smack', async (req, res) => {
+  try {
+    const { timeReduced, sessionId, userAgent } = req.body;
+
+    if (timeReduced === undefined || !sessionId) {
+      return res.status(400).json({
+        success: false,
+        message: 'Missing required fields: timeReduced, sessionId'
+      });
+    }
+
+    const userIP = req.ip || req.headers['x-forwarded-for'] || 'unknown';
+    const crypto = require('crypto');
+    const ipHash = crypto.createHash('sha256').update(userIP).digest('hex');
+
+    const smackData = {
+      timeReduced: parseInt(timeReduced) || 0,
+      sessionId: sessionId,
+      ipHash: ipHash,
+      userAgent: userAgent || req.headers['user-agent'] || '',
+      timestamp: new Date().toISOString(),
+      createdAt: Date.now()
+    };
+
+    // Enregistrer le SMACK individuel
+    const smackRef = await db.collection('smacks').add(smackData);
+
+    // Mettre à jour le compteur global
+    const globalRef = db.collection('global-stats').doc('smack-counter');
+    const globalSnap = await globalRef.get();
+
+    if (globalSnap.exists) {
+      const current = globalSnap.data();
+      await globalRef.update({
+        totalClicks: (current.totalClicks || 0) + 1,
+        totalTimeReduced: (current.totalTimeReduced || 0) + parseInt(timeReduced),
+        lastUpdated: new Date().toISOString()
+      });
+    } else {
+      await globalRef.set({
+        totalClicks: 1,
+        totalTimeReduced: parseInt(timeReduced),
+        createdAt: new Date().toISOString(),
+        lastUpdated: new Date().toISOString()
+      });
+    }
+
+    // Récupérer les stats mises à jour
+    const updatedGlobal = await globalRef.get();
+    const globalData = updatedGlobal.data();
+
+    console.log(`⚡ SMACK recorded: +${timeReduced}s (Total: ${globalData.totalClicks} clicks, ${globalData.totalTimeReduced}s)`);
+
+    res.status(201).json({
+      success: true,
+      message: 'SMACK recorded successfully',
+      data: {
+        id: smackRef.id,
+        timeReduced: parseInt(timeReduced),
+        globalStats: {
+          totalClicks: globalData.totalClicks,
+          totalTimeReduced: globalData.totalTimeReduced,
+          formattedTimeReduced: formatTime(globalData.totalTimeReduced)
+        }
+      }
+    });
+
+  } catch (error) {
+    console.error('❌ Error recording SMACK:', error);
+    res.status(500).json({
+      success: false,
+      message: 'Error recording SMACK',
+      error: error.message
+    });
+  }
+});
+
+app.get('/api/global-counter', async (req, res) => {
+  try {
+    const globalRef = db.collection('global-stats').doc('smack-counter');
+    const globalSnap = await globalRef.get();
+
+    if (globalSnap.exists) {
+      const globalData = globalSnap.data();
+      res.json({
+        success: true,
+        globalStats: {
+          totalClicks: globalData.totalClicks || 0,
+          totalTimeReduced: globalData.totalTimeReduced || 0,
+          formattedTimeReduced: formatTime(globalData.totalTimeReduced || 0)
+        }
+      });
+    } else {
+      res.json({
+        success: true,
+        globalStats: {
+          totalClicks: 0,
+          totalTimeReduced: 0,
+          formattedTimeReduced: "0m 0s"
+        }
+      });
+    }
+
+  } catch (error) {
+    console.error('❌ Error getting global counter:', error);
+    res.status(500).json({
+      success: false,
+      message: 'Error getting global counter',
+      error: error.message
+    });
+  }
+});
+
+// Fonction utilitaire pour formater le temps
+function formatTime(seconds) {
+  const hours = Math.floor(seconds / 3600);
+  const minutes = Math.floor((seconds % 3600) / 60);
+  const remainingSeconds = seconds % 60;
+
+  if (hours > 0) {
+    return `${hours}h ${minutes}m ${remainingSeconds}s`;
+  } else if (minutes > 0) {
+    return `${minutes}m ${remainingSeconds}s`;
+  } else {
+    return `${remainingSeconds}s`;
+  }
+}
+
 // ========== TOKEN ENDPOINTS ==========
 app.post('/api/token', async (req, res) => {
   try {
