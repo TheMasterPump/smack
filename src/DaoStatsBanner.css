@@ -1,0 +1,87 @@
+.dao-banner-glow-wrap {
+  position: relative;
+  margin: 32px 0 24px 0;
+}
+
+.dao-banner-glow-wrap {
+  position: relative;
+  margin: 32px 0 24px 0;
+  animation: dao-pulse-glow 2.8s infinite cubic-bezier(.77,0,.18,1);
+  /* On garde border-radius pour la glow */
+  border-radius: 25px;
+}
+
+@keyframes dao-pulse-glow {
+  0% {
+    box-shadow: 0 0 40px 2px #fb402344, 0 0 0 #fb402300;
+  }
+  50% {
+    box-shadow: 0 0 70px 12px #fb402370, 0 0 0 #fb402344;
+  }
+  100% {
+    box-shadow: 0 0 40px 2px #fb402344, 0 0 0 #fb402300;
+  }
+}
+@keyframes orb-rotate {
+  0%   { transform: rotate(0deg)   translateX(0); }
+  100% { transform: rotate(360deg) translateX(0); }
+}
+@keyframes orb-pulse {
+  0%, 100% { filter: blur(1px) brightness(1); }
+  50%      { filter: blur(5px) brightness(1.2); }
+}
+
+/* Bannière stats */
+.dao-banner-animated {
+  display: flex;
+  align-items: center;
+  justify-content: space-around;
+  background: linear-gradient(90deg, #23232b 0%, #232324 100%);
+  border-radius: 20px;
+  padding: 36px 32px 28px 32px;
+  position: relative;
+  z-index: 1;
+  box-shadow: 0 0 45px #fb402340, 0 0 1px #ffcc32;
+  overflow: hidden;
+}
+
+.dao-banner-stat {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  flex: 1;
+  min-width: 110px;
+}
+.dao-banner-title {
+  color: #ffcc32;
+  font-weight: bold;
+  margin-bottom: 4px;
+  font-size: 1.04rem;
+  letter-spacing: 0.2px;
+}
+.dao-banner-value {
+  font-size: 1.25rem;
+  font-weight: 700;
+  margin-bottom: 0;
+  letter-spacing: 0.5px;
+}
+.dao-banner-value.fees,
+.dao-banner-value.treasury { color: #fb4023; }
+.dao-banner-value.marketcap { color: #ffcc32; }
+.dao-banner-value.holders { color: #fafff8; }
+.dao-banner-value.tokens { color: #31ff97; }
+.dao-banner-value.voters { color: #fff; }
+
+@media (max-width: 1100px) {
+  .dao-banner-animated {
+    flex-wrap: wrap;
+    gap: 18px;
+  }
+}
+@media (max-width: 750px) {
+  .dao-banner-animated {
+    flex-direction: column;
+    gap: 10px;
+    padding: 22px 7px 18px 7px;
+  }
+}

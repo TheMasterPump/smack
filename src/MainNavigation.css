@@ -1,0 +1,88 @@
+.main-menu-bar {
+  display: flex;
+  gap: 18px;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 32px;
+  margin-top: 24px;
+  flex-wrap: wrap;
+  padding: 0 20px;
+}
+
+.main-menu-item {
+  background: #181B24;
+  color: #fff;
+  border: 2px solid #333;
+  padding: 10px 16px;
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  text-decoration: none;
+  min-width: 100px;
+  justify-content: center;
+}
+
+.main-menu-item:hover {
+  background: #232324;
+  border-color: #fb4023;
+  transform: translateY(-1px);
+  box-shadow: 0 0 15px rgba(251, 64, 35, 0.6);
+  animation: pulse 1.5s ease-in-out infinite;
+}
+
+.main-menu-item.active {
+  background: #232324;
+  color: #fb4023;
+  border-color: #fb4023;
+  font-weight: 800;
+  box-shadow: 0 0 20px rgba(251, 64, 35, 0.8);
+  animation: pulse 2s ease-in-out infinite;
+}
+
+@keyframes pulse {
+  0% {
+    box-shadow: 0 0 15px rgba(251, 64, 35, 0.6);
+  }
+  50% {
+    box-shadow: 0 0 25px rgba(251, 64, 35, 1), 0 0 35px rgba(251, 64, 35, 0.7);
+  }
+  100% {
+    box-shadow: 0 0 15px rgba(251, 64, 35, 0.6);
+  }
+}
+
+.main-menu-item img {
+  filter: brightness(1.1) hue-rotate(-10deg) saturate(1.5) sepia(0.8) hue-rotate(340deg);
+  transition: all 0.3s ease;
+}
+
+.main-menu-item:hover img {
+  filter: brightness(1.3) hue-rotate(-10deg) saturate(1.8) sepia(1) hue-rotate(340deg) drop-shadow(0 0 8px rgba(251, 64, 35, 0.6));
+  transform: scale(1.1);
+}
+
+.main-menu-item.active img {
+  filter: brightness(1.2) hue-rotate(-10deg) saturate(1.6) sepia(0.9) hue-rotate(340deg) drop-shadow(0 0 12px rgba(251, 64, 35, 0.8));
+  transform: scale(1.05);
+}
+
+.main-menu-item:hover.active img {
+  filter: brightness(1.4) hue-rotate(-10deg) saturate(2) sepia(1.1) hue-rotate(340deg) drop-shadow(0 0 15px rgba(251, 64, 35, 1));
+  transform: scale(1.15);
+}
+
+.main-menu-item.disabled {
+  opacity: 0.3;
+  cursor: not-allowed;
+  pointer-events: none;
+  filter: grayscale(80%);
+}
+
+.main-menu-item.disabled img {
+  filter: brightness(0.5) grayscale(100%);
+}
