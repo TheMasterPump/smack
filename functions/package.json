@@ -1,0 +1,31 @@
+{
+  "name": "functions",
+  "version": "1.0.0",
+  "description": "Firebase Functions for Meme Launch Platform",
+  "main": "index.js",
+  "scripts": {
+    "serve": "firebase emulators:start --only functions",
+    "shell": "firebase functions:shell",
+    "start": "npm run shell",
+    "deploy": "firebase deploy --only functions",
+    "logs": "firebase functions:log"
+  },
+  "engines": {
+    "node": "18"
+  },
+  "dependencies": {
+    "@coral-xyz/anchor": "^0.29.0",
+    "@project-serum/anchor": "^0.26.0",
+    "cors": "^2.8.5",
+    "express": "^4.18.2",
+    "firebase-admin": "^12.0.0",
+    "firebase-functions": "^6.0.1",
+    "helmet": "^8.1.0",
+    "multer": "^1.4.5-lts.1",
+    "tweetnacl": "^1.0.3"
+  },
+  "devDependencies": {
+    "firebase-functions-test": "^3.1.0"
+  },
+  "private": true
+}
