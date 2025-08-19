@@ -139,8 +139,8 @@ const LaunchCountdown = () => {
 
     loadGlobalStats();
     
-    // Recharger les stats toutes les 5 secondes pour simulation temps réel
-    const interval = setInterval(loadGlobalStats, 5000);
+    // Recharger les stats toutes les 3 secondes pour temps réel
+    const interval = setInterval(loadGlobalStats, 3000);
     
     return () => clearInterval(interval);
   }, []);
@@ -815,7 +815,7 @@ const LaunchCountdown = () => {
                   textAlign: 'center',
                   lineHeight: '1.3'
                 }} className="countdown-time-saved">
-                  {globalStats.formattedTimeReduced} saved by {globalStats.totalClicks} community SMACKS!
+                  🌍 {globalStats.formattedTimeReduced} saved by {globalStats.totalClicks} global SMACKS!
                 </div>
               )}
             </div>
@@ -1029,7 +1029,7 @@ const LaunchCountdown = () => {
               marginBottom: '20px',
               lineHeight: '1.4'
             }}>
-              Join the VIP whitelist! Drop your Solana wallet to secure exclusive access and get redirected to our private Telegram.
+              By dropping your wallet, you get VIP access to the Smack platform. By joining our VIP Telegram, you get early access to the $SMACK token launch.
             </div>
 
             {/* Input pour wallet */}
