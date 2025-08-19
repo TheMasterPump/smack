@@ -777,11 +777,30 @@ const LaunchCountdown = () => {
             </div>
           </div>
           
+          {/* Compteur global - toujours visible */}
+          <div style={{
+            textAlign: 'center',
+            marginTop: '20px'
+          }}>
+            <div style={{
+              marginTop: '10px',
+              fontSize: '16px',
+              color: '#fb4023',
+              fontWeight: '700',
+              textShadow: '0 0 8px #fb4023',
+              animation: 'smackPulse 2s ease-in-out infinite',
+              textAlign: 'center',
+              lineHeight: '1.3'
+            }} className="countdown-time-saved">
+{globalStats.formattedTimeReduced} saved by {globalStats.totalClicks} global SMACKS!
+            </div>
+          </div>
+
           {/* Compteur de clics stylé */}
           {clickCount > 0 && (
             <div style={{
               textAlign: 'center',
-              marginTop: '20px',
+              marginTop: '10px',
               animation: 'smackPulse 1s ease-in-out infinite'
             }}>
               <div style={{
@@ -802,22 +821,6 @@ const LaunchCountdown = () => {
               }} className="countdown-stats">
 {clickCount} SMACKS!
               </div>
-              
-              {/* Indicateur du temps économisé */}
-              {timeReduced > 0 && (
-                <div style={{
-                  marginTop: '10px',
-                  fontSize: '14px',
-                  color: '#fb4023',
-                  fontWeight: '600',
-                  textShadow: '0 0 8px #fb4023',
-                  animation: 'smackPulse 2s ease-in-out infinite',
-                  textAlign: 'center',
-                  lineHeight: '1.3'
-                }} className="countdown-time-saved">
-                  🌍 {globalStats.formattedTimeReduced} saved by {globalStats.totalClicks} global SMACKS!
-                </div>
-              )}
             </div>
           )}
           
