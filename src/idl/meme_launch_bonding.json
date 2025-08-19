@@ -1,0 +1,127 @@
+{
+  "version": "0.1.0",
+  "name": "meme_launch_bonding",
+  "address": "EJ7dWpEMiUJ5jTjg3EkfS2hGY48PSrEM8r54HrFgZNrA",
+  "instructions": [
+    {
+      "name": "buy",
+      "accounts": [
+        { "name": "bondingCurve", "isMut": true },
+        { "name": "global", "isMut": true },
+        { "name": "payer", "isMut": true, "isSigner": true },
+        { "name": "creatorVault", "isMut": true },
+        { "name": "feeVault", "isMut": true },
+        { "name": "mint", "isMut": true },
+        { "name": "userTokenAccount", "isMut": true },
+        { "name": "curveVault", "isMut": true },
+        { "name": "curveAuthority" },
+        { "name": "tokenProgram" },
+        { "name": "systemProgram" }
+      ],
+      "args": [
+        { "name": "deltaQ", "type": "u64" }
+      ]
+    },
+    {
+      "name": "initializeGlobal",
+      "accounts": [
+        { "name": "global", "isMut": true },
+        { "name": "payer", "isMut": true, "isSigner": true },
+        { "name": "systemProgram" }
+      ],
+      "args": [
+        { "name": "feeBasisPoints", "type": "u64" },
+        { "name": "creatorFeeBasisPoints", "type": "u64" },
+        { "name": "poolMigrationFee", "type": "u64" },
+        { "name": "feeRecipient", "type": "publicKey" },
+        { "name": "enableMigrate", "type": "bool" }
+      ]
+    },
+    {
+      "name": "launchCurve",
+      "accounts": [
+        { "name": "payer", "isMut": true, "isSigner": true },
+        { "name": "mint", "isMut": true, "isSigner": true },
+        { "name": "curveVault", "isMut": true },
+        { "name": "bondingCurve", "isMut": true },
+        { "name": "curveAuthority" },
+        { "name": "tokenProgram" },
+        { "name": "systemProgram" },
+        { "name": "associatedTokenProgram" },
+        { "name": "rent" }
+      ],
+      "args": [
+        { "name": "a", "type": "u64" },
+        { "name": "b", "type": "u64" },
+        { "name": "c", "type": "u64" },
+        { "name": "maxSupply", "type": "u64" },
+        { "name": "creator", "type": "publicKey" }
+      ]
+    },
+    {
+      "name": "migrate",
+      "accounts": [
+        { "name": "bondingCurve", "isMut": true },
+        { "name": "global", "isMut": true },
+        { "name": "curveVault", "isMut": true },
+        { "name": "destinationTokenAccount", "isMut": true },
+        { "name": "mint", "isMut": true },
+        { "name": "curveAuthority" },
+        { "name": "tokenProgram" }
+      ],
+      "args": []
+    },
+    {
+      "name": "sell",
+      "accounts": [
+        { "name": "bondingCurve", "isMut": true },
+        { "name": "mint", "isMut": true },
+        { "name": "userTokenAccount", "isMut": true },
+        { "name": "user", "isMut": true, "isSigner": true },
+        { "name": "tokenProgram" }
+      ],
+      "args": [
+        { "name": "deltaQ", "type": "u64" }
+      ]
+    }
+  ],
+  "accounts": [
+    {
+      "name": "bondingCurve",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          { "name": "a", "type": "u64" },
+          { "name": "b", "type": "u64" },
+          { "name": "c", "type": "u64" },
+          { "name": "currentSupply", "type": "u64" },
+          { "name": "maxSupply", "type": "u64" },
+          { "name": "totalRaised", "type": "u64" },
+          { "name": "complete", "type": "bool" },
+          { "name": "creator", "type": "publicKey" },
+          { "name": "realSolReserves", "type": "u64" },
+          { "name": "curveVault", "type": "publicKey" }
+        ]
+      }
+    },
+    {
+      "name": "global",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          { "name": "feeBasisPoints", "type": "u64" },
+          { "name": "creatorFeeBasisPoints", "type": "u64" },
+          { "name": "poolMigrationFee", "type": "u64" },
+          { "name": "feeRecipient", "type": "publicKey" },
+          { "name": "enableMigrate", "type": "bool" }
+        ]
+      }
+    }
+  ],
+  "errors": [
+    { "code": 6000, "name": "AlreadyMigrated", "msg": "Déjà migré" },
+    { "code": 6001, "name": "MigrationNotEnabled", "msg": "Migration pas activée" },
+    { "code": 6002, "name": "NotComplete", "msg": "Bonding curve pas complète" },
+    { "code": 6003, "name": "NotEnoughSolForMigration", "msg": "Pas assez de SOL pour migrer" }
+  ]
+}

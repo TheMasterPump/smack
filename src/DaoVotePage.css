@@ -1,0 +1,487 @@
+/* DAO ROOT LAYOUT */
+.dao-root {
+  display: grid;
+  grid-template-columns: 250px 1fr;
+  min-height: 100vh;
+  background: linear-gradient(120deg, #23232b 60%, #181b20 100%);
+  font-family: 'Inter', 'Segoe UI', Arial, sans-serif;
+}
+.dao-sidebar {
+  background: #232324;
+  padding: 0 0 18px 0;
+  box-shadow: 3px 0 32px #0007;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  min-height: 100vh;
+  position: relative;
+}
+.dao-logo {
+  color: #ffcc32;
+  font-size: 1.44rem;
+  font-weight: 900;
+  text-shadow: 0 1px 3px #fb402350;
+  padding: 28px 22px 5px 22px;
+  letter-spacing: 0.3px;
+}
+.dao-logo-sub {
+  font-size: 1.15rem;
+  color: #fb4023;
+  font-weight: 800;
+  letter-spacing: 1px;
+}
+.dao-menu {
+  display: flex;
+  flex-direction: column;
+  margin: 20px 0 15px 0;
+}
+.dao-menu button {
+  background: none;
+  border: none;
+  text-align: left;
+  padding: 13px 34px 13px 24px;
+  color: #ffcc32;
+  font-size: 1.13rem;
+  font-weight: 600;
+  cursor: pointer;
+  border-left: 4px solid transparent;
+  transition: background 0.17s, color 0.14s, border-left 0.18s;
+  outline: none;
+}
+.dao-menu button.active,
+.dao-menu button:hover {
+  color: #fb4023;
+  background: #23232b;
+  border-left: 4px solid #fb4023;
+}
+.dao-sidebar-footer {
+  position: absolute;
+  bottom: 20px;
+  left: 0; right: 0;
+  font-size: 1rem;
+  color: #ffcc32;
+  background: #181b20;
+  padding: 18px 22px 13px 22px;
+  border-radius: 12px 12px 0 0;
+  box-shadow: 0 -1px 18px #fb402320 inset;
+}
+.dao-stat-title {
+  font-weight: bold;
+  color: #ffcc32;
+  margin-bottom: 7px;
+}
+.dao-content {
+  padding: 40px 38px 32px 38px;
+  min-height: 100vh;
+}
+
+/* --- HEADER centré + bouton à droite --- */
+.dao-header {
+  position: relative;
+  width: 100%;
+  margin-bottom: 36px;
+  min-height: 105px;
+  display: flex;
+  align-items: flex-start;
+  justify-content: center;
+}
+
+/* ---- TITRE PRINCIPAL GOUVERNANCE (grande taille centrée et stylée) ---- */
+.dao-main-title {
+  font-family: 'Inter', 'Segoe UI', Arial, sans-serif; /* Comme le bouton Join DAO */
+  font-size: 4rem;
+  font-weight: 900;
+  color: #ffcc32;
+  letter-spacing: 2px;
+  text-align: center;
+  width: 100%;
+  margin: 36px 0 6px 0;
+  line-height: 1.08;
+
+  /* Contour rouge autour du texte */
+  -webkit-text-stroke: 3px #fb4023;
+  text-stroke: 3px #fb4023; /* Pour compatibilité */
+
+  /* Glow subtil rouge */
+  text-shadow:
+    0 2px 14px #fb402399,
+    0 1px 1px #181b20;
+}
+
+@media (max-width: 750px) {
+  .dao-main-title {
+    font-size: 2.1rem;
+    margin: 20px 0 6px 0;
+  }
+}
+
+.dao-header-title {
+  flex: 1;
+  text-align: center;
+  font-size: 8rem !important;
+  font-weight: 900;
+  color: #fb4023;
+  margin: 36px 0 6px 0;
+  letter-spacing: 2px;
+  line-height: 1.1;
+  width: 100%;
+  text-shadow:
+    0 2px 18px #fb402360,
+    0 1px 3px #181b20;
+}
+
+@media (max-width: 750px) {
+  .dao-header-title {
+    font-size: 2.1rem;
+    margin: 20px 0 6px 0;
+  }
+}
+
+/* Description sous le titre */
+.dao-header-desc {
+  color: #e4e4e4;
+  font-size: 1.13rem;
+  font-weight: 500;
+  margin-top: 2px;
+}
+
+/* BTN JOIN DAO (coin haut droite header) */
+.dao-join-btn {
+  background: #fb4023;
+  color: #fff;
+  border: none;
+  border-radius: 12px;
+  font-weight: bold;
+  font-size: 1.15rem;
+  padding: 13px 28px;
+  cursor: pointer;
+  box-shadow: 0 2px 12px #fb40234d;
+  transition: background 0.18s, color 0.13s, box-shadow 0.32s;
+  position: absolute;
+  top: 0;
+  right: 0;
+  overflow: hidden;
+}
+.dao-join-btn:hover,
+.dao-join-btn:focus {
+  background: #fb4023;
+  color: #fff;
+  box-shadow:
+    0 0 0 0 #fb402355,
+    0 0 26px 8px #fb402385;
+  animation: dao-btn-pulse-red 1.15s cubic-bezier(0.4,0,0.2,1) infinite;
+}
+@keyframes dao-btn-pulse-red {
+  0% {
+    box-shadow: 0 0 0 0 #fb402355, 0 0 26px 8px #fb402385;
+  }
+  60% {
+    box-shadow: 0 0 0 11px #fb402330, 0 0 34px 18px #fb402340;
+  }
+  100% {
+    box-shadow: 0 0 0 0 #fb402355, 0 0 26px 8px #fb402385;
+  }
+}
+
+/* ...le reste inchangé... */
+.dao-section-title {
+  color: #ffcc32;
+  font-size: 1.22rem;
+  margin-bottom: 19px;
+  font-weight: bold;
+}
+.dao-proposal-row {
+  display: flex;
+  gap: 32px;
+  flex-wrap: wrap;
+}
+.dao-proposal-card {
+  background: #19191e;
+  border-radius: 16px;
+  padding: 28px 24px 22px 24px;
+  min-width: 320px;
+  max-width: 340px;
+  flex: 1;
+  box-shadow: 0 5px 32px #0004, 0 2px 10px #fb40232a;
+  display: flex;
+  flex-direction: column;
+  margin-bottom: 30px;
+}
+.dao-proposal-title {
+  color: #ffcc32;
+  font-size: 1.16rem;
+  font-weight: 700;
+  margin-bottom: 4px;
+}
+.dao-proposal-desc {
+  color: #e4e4e4;
+  font-size: 1rem;
+  margin-bottom: 3px;
+}
+.dao-proposal-dates {
+  color: #fff5;
+  font-size: 0.97rem;
+  margin-bottom: 11px;
+}
+.dao-vote-bar {
+  display: flex;
+  align-items: center;
+  margin-bottom: 16px;
+  gap: 8px;
+}
+.dao-bar-bg {
+  flex: 1;
+  height: 13px;
+  background: #22232b;
+  border-radius: 7px;
+  overflow: hidden;
+  display: flex;
+  box-shadow: 0 1px 5px #fb40232a inset;
+  margin: 0 7px;
+}
+.dao-bar-yes {
+  background: linear-gradient(90deg, #fb4023 50%, #ffcc32 100%);
+  height: 100%;
+}
+.dao-bar-no {
+  background: #444353;
+  height: 100%;
+}
+.yes-label {
+  color: #ffcc32;
+  font-weight: 600;
+  font-size: 0.99rem;
+}
+.no-label {
+  color: #fb4023;
+  font-weight: 600;
+  font-size: 0.99rem;
+}
+.dao-vote-btn {
+  background: #fb4023;
+  color: #fff;
+  border: none;
+  border-radius: 8px;
+  padding: 9px 25px;
+  font-weight: 600;
+  font-size: 1.11rem;
+  margin-top: 7px;
+  box-shadow: 0 2px 8px #fb40233a;
+  cursor: pointer;
+  transition: background 0.18s;
+}
+.dao-vote-btn:hover { background: #cf2a0d; }
+.dao-closed-badge {
+  background: #232324;
+  color: #ffcc32;
+  font-weight: bold;
+  padding: 7px 19px;
+  border-radius: 7px;
+  display: inline-block;
+  margin-top: 7px;
+  font-size: 1.09rem;
+}
+.dao-propose-form {
+  background: #181b20;
+  border-radius: 15px;
+  box-shadow: 0 1px 10px #fb40232a;
+  padding: 26px 25px 22px 25px;
+  max-width: 420px;
+  margin-bottom: 40px;
+}
+.dao-input {
+  width: 100%;
+  border-radius: 7px;
+  border: 2px solid #ffcc32;
+  background: #19191e;
+  color: #ffcc32;
+  padding: 13px 11px;
+  font-size: 1.07rem;
+  font-family: inherit;
+  margin-bottom: 18px;
+  font-weight: bold;
+  outline: none;
+  box-shadow: 0 1px 6px #fb40231a inset;
+  transition: border 0.18s;
+}
+.dao-input:focus { border-color: #fb4023; }
+.dao-propose-btn {
+  background: #fb4023;
+  color: #fff;
+  border: none;
+  border-radius: 7px;
+  font-weight: bold;
+  font-size: 1.07rem;
+  padding: 12px 21px;
+  box-shadow: 0 2px 8px #fb40233a;
+  cursor: pointer;
+  transition: background 0.19s;
+}
+.dao-propose-btn:hover { background: #cf2a0d; }
+.dao-governance-content {
+  display: flex;
+  flex-direction: column;
+  gap: 25px;
+}
+
+.dao-info-card {
+  background: #232328;
+  border-radius: 15px;
+  padding: 25px;
+  border: 1px solid #333;
+  transition: all 0.3s ease;
+}
+
+.dao-info-card:hover {
+  border-color: #ffcc32;
+  background: #252530;
+}
+
+.dao-info-card h3 {
+  color: #ffcc32;
+  font-size: 1.3rem;
+  margin-bottom: 15px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.dao-info-card p {
+  color: #ddd;
+  line-height: 1.6;
+  margin-bottom: 15px;
+}
+
+.dao-info-card ul {
+  list-style: none;
+  padding: 0;
+  margin: 15px 0;
+}
+
+.dao-info-card li {
+  background: #1a1a1f;
+  padding: 12px 18px;
+  margin-bottom: 8px;
+  border-radius: 8px;
+  border-left: 4px solid #fb4023;
+  color: #ddd;
+  transition: all 0.2s ease;
+}
+
+.dao-info-card li:hover {
+  background: #1f1f24;
+  border-left-color: #ffcc32;
+}
+
+.dao-info-card li strong {
+  color: #ffcc32;
+}
+
+.dao-join-card {
+  background: linear-gradient(135deg, rgba(251, 64, 35, 0.1), rgba(255, 204, 50, 0.1));
+  border: 2px solid #fb4023;
+  position: relative;
+  overflow: hidden;
+  text-align: center;
+}
+
+.dao-join-card::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 3px;
+  background: linear-gradient(90deg, #fb4023, #ffcc32, #13ff98);
+}
+
+.dao-primary-btn {
+  background: linear-gradient(135deg, #fb4023, #ff5722);
+  border: none;
+  color: #fff;
+  padding: 15px 30px;
+  border-radius: 10px;
+  font-size: 1.1rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  margin-top: 15px;
+}
+
+.dao-primary-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 25px rgba(251, 64, 35, 0.3);
+}
+
+.dao-participation-steps {
+  background: #1a1a1f;
+  border-radius: 15px;
+  padding: 30px;
+  border: 1px solid #333;
+}
+
+.dao-participation-steps h3 {
+  color: #13ff98;
+  font-size: 1.4rem;
+  margin-bottom: 25px;
+  text-align: center;
+}
+
+.dao-steps {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: 20px;
+}
+
+.dao-step {
+  display: flex;
+  align-items: flex-start;
+  gap: 15px;
+  background: #232328;
+  padding: 20px;
+  border-radius: 12px;
+  border: 1px solid #444;
+  transition: all 0.3s ease;
+}
+
+.dao-step:hover {
+  border-color: #ffcc32;
+  transform: translateY(-2px);
+}
+
+.step-number {
+  background: #fb4023;
+  color: #fff;
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 700;
+  font-size: 1.2rem;
+  flex-shrink: 0;
+}
+
+.step-content h4 {
+  color: #ffcc32;
+  font-size: 1.1rem;
+  margin: 0 0 8px 0;
+}
+
+.step-content p {
+  color: #bbb;
+  margin: 0;
+  font-size: 14px;
+  line-height: 1.5;
+}
+
+@media (max-width: 950px) {
+  .dao-root { grid-template-columns: 1fr; }
+  .dao-sidebar { min-height: 80px; position: static; flex-direction: row; }
+  .dao-sidebar-footer { position: static; margin-top: 10px; }
+  .dao-content { padding: 18px 8px 18px 8px; }
+  .dao-header { flex-direction: column; gap: 14px;}
+  .dao-proposal-row { flex-direction: column; gap: 0;}
+  .dao-proposal-card { max-width: 100%; min-width: 0; }
+}
