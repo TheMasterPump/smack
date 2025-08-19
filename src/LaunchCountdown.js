@@ -803,8 +803,10 @@ const LaunchCountdown = () => {
                   color: '#fb4023',
                   fontWeight: '600',
                   textShadow: '0 0 8px #fb4023',
-                  animation: 'smackPulse 2s ease-in-out infinite'
-                }}>
+                  animation: 'smackPulse 2s ease-in-out infinite',
+                  textAlign: 'center',
+                  lineHeight: '1.3'
+                }} className="countdown-time-saved">
                   {globalStats.formattedTimeReduced} saved by {globalStats.totalClicks} community SMACKS!
                 </div>
               )}
@@ -1750,116 +1752,145 @@ const LaunchCountdown = () => {
               .countdown-container {
                 padding: 20px 15px !important;
                 margin: 0 10px !important;
+                max-width: 95% !important;
               }
               
               .countdown-timer {
-                padding: 20px 25px !important;
-                font-size: 48px !important;
-                letter-spacing: 5px !important;
+                padding: 15px 20px !important;
+                font-size: 52px !important;
+                letter-spacing: 4px !important;
+                max-width: 100% !important;
+                overflow: hidden !important;
+                margin: 20px auto !important;
+              }
+              
+              .countdown-timer div:first-child {
+                font-size: 52px !important;
+                letter-spacing: 4px !important;
+                line-height: 1 !important;
               }
               
               .countdown-labels {
-                font-size: 12px !important;
-                letter-spacing: 3px !important;
+                font-size: 11px !important;
+                letter-spacing: 2px !important;
+                flex-wrap: wrap !important;
+                gap: 0 !important;
               }
               
               .countdown-labels > div {
-                width: 70px !important;
+                width: 65px !important;
+                font-size: 11px !important;
               }
               
               .smack-logo {
-                max-width: 200px !important;
+                max-width: 180px !important;
                 margin-top: -50px !important;
               }
               
               .countdown-arrow {
-                font-size: 48px !important;
-                margin-top: -70px !important;
+                font-size: 44px !important;
+                margin-top: -60px !important;
               }
               
               .countdown-button-container {
-                transform: perspective(600px) rotateX(5deg) scale(0.8) !important;
-              }
-              
-              .countdown-button-base {
-                width: 160px !important;
-                height: 160px !important;
+                transform: perspective(600px) rotateX(5deg) scale(0.75) !important;
+                margin: 20px auto !important;
               }
               
               .countdown-stats {
+                font-size: 15px !important;
+                padding: 10px 18px !important;
+                margin-top: 15px !important;
+              }
+              
+              /* Messages side repositioning for mobile */
+              div[style*="position: absolute"][style*="left: -220px"] {
+                left: -180px !important;
                 font-size: 14px !important;
-                padding: 8px 16px !important;
+                max-width: 120px !important;
               }
               
-              .countdown-stats-number {
-                font-size: 20px !important;
-              }
-              
-              .countdown-stats-button {
-                font-size: 10px !important;
-                padding: 6px 12px !important;
-              }
-              
-              .countdown-messages {
+              div[style*="position: absolute"][style*="left: calc(100% + 20px)"] {
+                left: calc(100% + 10px) !important;
                 font-size: 14px !important;
-                max-width: 150px !important;
-              }
-              
-              .countdown-share-popup {
-                max-width: 320px !important;
-                padding: 20px !important;
-              }
-              
-              .countdown-share-title {
-                font-size: 14px !important;
-              }
-              
-              .countdown-share-message {
-                font-size: 12px !important;
-              }
-              
-              .countdown-share-buttons button {
-                padding: 8px 15px !important;
-                font-size: 13px !important;
+                max-width: 120px !important;
               }
             }
             
             @media (max-width: 480px) {
               .countdown-container {
-                padding: 15px 10px !important;
+                padding: 15px 8px !important;
                 margin: 0 5px !important;
+                max-width: 98% !important;
+                min-height: auto !important;
               }
               
               .countdown-timer {
-                font-size: 36px !important;
-                padding: 15px 20px !important;
-                letter-spacing: 3px !important;
+                font-size: 42px !important;
+                padding: 12px 15px !important;
+                letter-spacing: 2px !important;
+                max-width: 100% !important;
+                box-sizing: border-box !important;
+                margin: 15px auto !important;
+              }
+              
+              .countdown-timer div:first-child {
+                font-size: 42px !important;
+                letter-spacing: 2px !important;
+                white-space: nowrap !important;
+                overflow: hidden !important;
               }
               
               .countdown-labels {
-                font-size: 10px !important;
-                letter-spacing: 2px !important;
+                font-size: 9px !important;
+                letter-spacing: 1px !important;
+                margin-top: 10px !important;
               }
               
               .countdown-labels > div {
-                width: 60px !important;
+                width: 55px !important;
+                font-size: 9px !important;
               }
               
               .smack-logo {
-                max-width: 150px !important;
+                max-width: 140px !important;
+                margin-top: -40px !important;
               }
               
               .countdown-arrow {
-                font-size: 36px !important;
+                font-size: 32px !important;
+                margin-top: -50px !important;
               }
               
               .countdown-button-container {
-                transform: perspective(500px) rotateX(5deg) scale(0.7) !important;
+                transform: perspective(500px) rotateX(5deg) scale(0.65) !important;
+                margin: 15px auto !important;
               }
               
-              .countdown-button-base {
-                width: 140px !important;
-                height: 140px !important;
+              .countdown-stats {
+                font-size: 13px !important;
+                padding: 8px 14px !important;
+                margin-top: 10px !important;
+              }
+              
+              /* Hide side messages on very small screens */
+              div[style*="position: absolute"][style*="left: -"] {
+                display: none !important;
+              }
+              
+              div[style*="position: absolute"][style*="left: calc(100% +"] {
+                display: none !important;
+              }
+              
+              /* Show only top and center messages on mobile */
+              div[style*="position: absolute"][style*="top: -"] {
+                top: -40px !important;
+                font-size: 12px !important;
+                max-width: 200px !important;
+              }
+              
+              div[style*="position: absolute"][style*="top: 30%"] {
+                font-size: 16px !important;
               }
             }
           `}

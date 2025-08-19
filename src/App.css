@@ -80,3 +80,65 @@ body {
   flex-direction: column;
   flex: 1;
 }
+
+/* Mobile responsive header */
+@media (max-width: 768px) {
+  .header-main {
+    padding: 15px 20px !important;
+    height: 120px !important;
+    flex-direction: column !important;
+    justify-content: space-between !important;
+  }
+  
+  .header-main .logo img {
+    max-width: 280px !important;
+    height: auto !important;
+  }
+  
+  .header-main > div[style*="position: absolute"] {
+    position: static !important;
+    display: flex;
+    flex-direction: row !important;
+    align-items: center !important;
+    gap: 15px !important;
+    margin-top: 10px !important;
+  }
+  
+  .wallet-adapter-button {
+    font-size: 14px !important;
+    padding: 10px 20px !important;
+  }
+}
+
+@media (max-width: 480px) {
+  .header-main {
+    padding: 10px 15px !important;
+    height: 100px !important;
+  }
+  
+  .header-main .logo img {
+    max-width: 220px !important;
+    height: auto !important;
+  }
+  
+  .header-main > div[style*="position: absolute"] {
+    margin-top: 8px !important;
+    gap: 10px !important;
+  }
+  
+  .header-main a[style*="width: 28px"] {
+    width: 24px !important;
+    height: 24px !important;
+  }
+  
+  .header-main a svg {
+    width: 12px !important;
+    height: 12px !important;
+  }
+  
+  .wallet-adapter-button {
+    font-size: 12px !important;
+    padding: 8px 16px !important;
+    min-width: auto !important;
+  }
+}

@@ -1,8 +1,9 @@
-import React from "react";
+import React, { useState } from "react";
 import { Link } from "react-router-dom";
 import "./MainNavigation.css";
 
-export default function MainNavigation({ activePage = "home", isLaunched = false }) {
+function MainNavigation({ activePage = "home", isLaunched = false }) {
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const navItems = [
     {
       id: "home",
@@ -49,27 +50,89 @@ export default function MainNavigation({ activePage = "home", isLaunched = false
     }
   };
 
+  const handleMobileMenuClick = (e, item) => {
+    handleClick(e, item);
+    setMobileMenuOpen(false);
+  };
+
   return (
-    <div className="main-menu-bar">
-      {navItems.map((item) => {
-        const isDisabled = !isLaunched && item.id !== "dao";
-        return (
-          <Link
-            key={item.id}
-            to={isDisabled ? "#" : item.path}
-            className={`main-menu-item ${activePage === item.id ? "active" : ""} ${isDisabled ? "disabled" : ""}`}
-            style={{ textDecoration: "none" }}
-            onClick={(e) => handleClick(e, item)}
+    <>
+      {/* Mobile hamburger button */}
+      <button 
+        className="mobile-menu-toggle"
+        onClick={() => setMobileMenuOpen(true)}
+        aria-label="Open mobile menu"
+      >
+        ☰
+      </button>
+
+      {/* Desktop menu */}
+      <div className="main-menu-bar">
+        {navItems.map((item) => {
+          const isDisabled = !isLaunched && item.id !== "dao";
+          return (
+            <Link
+              key={item.id}
+              to={isDisabled ? "#" : item.path}
+              className={`main-menu-item ${activePage === item.id ? "active" : ""} ${isDisabled ? "disabled" : ""}`}
+              style={{ textDecoration: "none" }}
+              onClick={(e) => handleClick(e, item)}
+            >
+              <img
+                src={item.icon}
+                width="22"
+                alt={item.label}
+              />
+              {item.label}
+            </Link>
+          );
+        })}
+      </div>
+
+      {/* Mobile menu overlay */}
+      {mobileMenuOpen && (
+        <div 
+          className="mobile-menu-overlay"
+          onClick={() => setMobileMenuOpen(false)}
+        >
+          <div 
+            className="mobile-menu-content"
+            onClick={(e) => e.stopPropagation()}
           >
-            <img
-              src={item.icon}
-              width="22"
-              alt={item.label}
-            />
-            {item.label}
-          </Link>
-        );
-      })}
-    </div>
+            <button 
+              className="mobile-menu-close"
+              onClick={() => setMobileMenuOpen(false)}
+              aria-label="Close mobile menu"
+            >
+              ✕
+            </button>
+            
+            <div className="mobile-menu-items">
+              {navItems.map((item) => {
+                const isDisabled = !isLaunched && item.id !== "dao";
+                return (
+                  <Link
+                    key={item.id}
+                    to={isDisabled ? "#" : item.path}
+                    className={`main-menu-item ${activePage === item.id ? "active" : ""} ${isDisabled ? "disabled" : ""}`}
+                    style={{ textDecoration: "none" }}
+                    onClick={(e) => handleMobileMenuClick(e, item)}
+                  >
+                    <img
+                      src={item.icon}
+                      width="22"
+                      alt={item.label}
+                    />
+                    {item.label}
+                  </Link>
+                );
+              })}
+            </div>
+          </div>
+        </div>
+      )}
+    </>
   );
 }
+
+export default MainNavigation;

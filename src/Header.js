@@ -19,7 +19,7 @@ export default function Header() {
       zIndex: 10,
       position: "relative",
       height: "150px"
-    }}>
+    }} className="header-main">
       <div className="logo" style={{ display: "flex", alignItems: "center", justifyContent: "center" }}>
         <img 
           src="/logo-header.png" 
