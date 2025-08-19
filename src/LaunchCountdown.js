@@ -1757,34 +1757,44 @@ const LaunchCountdown = () => {
               
               .countdown-timer {
                 padding: 15px 20px !important;
-                font-size: 52px !important;
-                letter-spacing: 4px !important;
+                font-size: 48px !important;
+                letter-spacing: 3px !important;
                 max-width: 100% !important;
                 overflow: hidden !important;
                 margin: 20px auto !important;
               }
               
               .countdown-timer div:first-child {
-                font-size: 52px !important;
-                letter-spacing: 4px !important;
-                line-height: 1 !important;
+                font-size: 48px !important;
+                letter-spacing: 3px !important;
+                line-height: 1.1 !important;
+                display: flex !important;
+                justify-content: center !important;
+                align-items: center !important;
+                white-space: nowrap !important;
               }
               
               .countdown-labels {
                 font-size: 11px !important;
-                letter-spacing: 2px !important;
-                flex-wrap: wrap !important;
-                gap: 0 !important;
+                letter-spacing: 1px !important;
+                display: flex !important;
+                justify-content: space-around !important;
+                align-items: center !important;
+                margin-top: 15px !important;
+                gap: 5px !important;
               }
               
               .countdown-labels > div {
-                width: 65px !important;
+                width: 70px !important;
                 font-size: 11px !important;
+                text-align: center !important;
+                flex: 1 !important;
               }
               
               .smack-logo {
                 max-width: 180px !important;
-                margin-top: -50px !important;
+                margin-top: -20px !important;
+                z-index: 1 !important;
               }
               
               .countdown-arrow {
@@ -1826,40 +1836,52 @@ const LaunchCountdown = () => {
               }
               
               .countdown-timer {
-                font-size: 42px !important;
-                padding: 12px 15px !important;
-                letter-spacing: 2px !important;
+                font-size: 36px !important;
+                padding: 12px 10px !important;
+                letter-spacing: 1px !important;
                 max-width: 100% !important;
                 box-sizing: border-box !important;
                 margin: 15px auto !important;
               }
               
               .countdown-timer div:first-child {
-                font-size: 42px !important;
-                letter-spacing: 2px !important;
+                font-size: 36px !important;
+                letter-spacing: 1px !important;
                 white-space: nowrap !important;
-                overflow: hidden !important;
+                overflow: visible !important;
+                display: flex !important;
+                justify-content: center !important;
+                align-items: center !important;
+                flex-wrap: nowrap !important;
               }
               
               .countdown-labels {
                 font-size: 9px !important;
-                letter-spacing: 1px !important;
-                margin-top: 10px !important;
+                letter-spacing: 0px !important;
+                margin-top: 12px !important;
+                display: flex !important;
+                justify-content: space-around !important;
+                align-items: center !important;
+                gap: 2px !important;
               }
               
               .countdown-labels > div {
-                width: 55px !important;
+                width: 60px !important;
                 font-size: 9px !important;
+                text-align: center !important;
+                flex: 1 !important;
               }
               
               .smack-logo {
                 max-width: 140px !important;
-                margin-top: -40px !important;
+                margin-top: 10px !important;
+                z-index: 1 !important;
               }
               
               .countdown-arrow {
                 font-size: 32px !important;
-                margin-top: -50px !important;
+                margin-top: -30px !important;
+                z-index: 2 !important;
               }
               
               .countdown-button-container {

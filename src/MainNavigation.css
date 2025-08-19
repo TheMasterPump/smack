@@ -15,7 +15,7 @@
   position: fixed;
   top: 20px;
   left: 20px;
-  z-index: 1000;
+  z-index: 1002;
   background: #181B24;
   border: 2px solid #fb4023;
   border-radius: 8px;
@@ -33,7 +33,7 @@
   right: 0;
   bottom: 0;
   background: rgba(0, 0, 0, 0.8);
-  z-index: 999;
+  z-index: 1003;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -175,6 +175,7 @@
     left: 15px;
     padding: 8px;
     font-size: 16px;
+    z-index: 1002;
   }
   
   .mobile-menu-content {
