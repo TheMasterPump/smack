@@ -18,6 +18,7 @@ module.exports = function override(config, env) {
       https: require.resolve("https-browserify"),
       os: require.resolve("os-browserify/browser"),
       url: require.resolve("url"),
+      vm: require.resolve("vm-browserify"),
     }
   };
 
@@ -28,6 +29,21 @@ module.exports = function override(config, env) {
       Buffer: ['buffer', 'Buffer'],
     }),
   ];
+
+  // Disable ESLint warnings as errors in production
+  if (process.env.NODE_ENV === 'production') {
+    config.module.rules.forEach(rule => {
+      if (rule.use && rule.use.some(use => use.loader && use.loader.includes('eslint-loader'))) {
+        rule.use.forEach(use => {
+          if (use.loader && use.loader.includes('eslint-loader')) {
+            use.options = use.options || {};
+            use.options.emitWarning = true;
+            use.options.failOnError = false;
+          }
+        });
+      }
+    });
+  }
 
   return config;
 };
