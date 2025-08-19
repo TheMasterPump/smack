@@ -9,11 +9,8 @@ const nacl = require("tweetnacl");
 const reportRouter = require('./report');
 const anchor = require('@project-serum/anchor');
 
-const BannedUser = require('./models/BannedUser');
-const VipSupporter = require('./models/VipSupporter');
-const GlobalCounter = require('./models/GlobalCounter');
 const { db } = require('./firebase');
-require('./db'); // Connexion MongoDB
+// Plus besoin de MongoDB - tout sur Firebase maintenant !
 const { initGlobal, launchCurve, buyToken, verifyFeeTransaction } = require('./utils/solanaUtils');
 
 const app = express();
@@ -1011,12 +1008,15 @@ io.on("connection", (socket) => {
       console.log("BACKEND - message reçu:", msg);
 
       if (msg && msg.user && msg.user.username) {
-        const banned = await BannedUser.findOne({
-          username: msg.user.username,
-          $or: [{ chatRoom: room }, { chatRoom: '*' }]
-        });
-        if (banned) {
-          socket.emit("banned_message", { reason: banned.chatRoom === "*" ? "Global ban" : "Token ban" });
+        // Vérifier les utilisateurs bannis dans Firebase
+        const bannedSnapshot = await db.collection('banned-users')
+          .where('username', '==', msg.user.username)
+          .where('chatRoom', 'in', [room, '*'])
+          .get();
+        
+        if (!bannedSnapshot.empty) {
+          const bannedDoc = bannedSnapshot.docs[0].data();
+          socket.emit("banned_message", { reason: bannedDoc.chatRoom === "*" ? "Global ban" : "Token ban" });
           return;
         }
       }
@@ -1160,46 +1160,60 @@ app.post('/api/vip/register-wallet', async (req, res) => {
       metadata: metadata
     };
 
-    // Utiliser upsert pour éviter les doublons
-    const supporter = await VipSupporter.findOneAndUpdate(
-      { wallet: wallet.trim() },
-      {
-        $set: vipData,
-        $inc: { totalSmackedSeconds: parseInt(smackedSeconds) || 0 }
-      },
-      { 
-        upsert: true, 
-        new: true, 
-        setDefaultsOnInsert: true 
-      }
-    );
-
-    console.log(`📝 VIP wallet registered: ${wallet.slice(0,8)}...${wallet.slice(-8)} (+${smackedSeconds}s)`);
-
-    res.status(201).json({
-      success: true,
-      message: 'Wallet successfully registered in VIP list!',
-      data: {
-        walletTruncated: `${wallet.slice(0,8)}...${wallet.slice(-8)}`,
-        smackedSeconds: supporter.smackedSeconds,
-        totalSmackedSeconds: supporter.totalSmackedSeconds,
-        rank: null, // Calculé dynamiquement
-        registeredAt: supporter.createdAt
-      }
-    });
-
-  } catch (error) {
-    console.error('❌ Error registering VIP wallet:', error);
+    // Firebase Firestore upsert
+    const vipRef = db.collection('vip-supporters').doc(wallet.trim());
+    const vipSnap = await vipRef.get();
     
-    if (error.code === 11000) {
-      // Erreur de duplication
-      return res.status(409).json({
-        success: false,
-        message: 'This wallet is already registered in our VIP list!',
-        error: 'duplicate_wallet'
+    if (vipSnap.exists) {
+      // Mettre à jour existant
+      const existingData = vipSnap.data();
+      const updatedData = {
+        ...vipData,
+        totalSmackedSeconds: (existingData.totalSmackedSeconds || 0) + parseInt(smackedSeconds),
+        updatedAt: new Date().toISOString()
+      };
+      await vipRef.update(updatedData);
+      
+      console.log(`📝 VIP wallet updated: ${wallet.slice(0,8)}...${wallet.slice(-8)} (+${smackedSeconds}s)`);
+      
+      res.status(200).json({
+        success: true,
+        message: 'Wallet successfully updated in VIP list!',
+        data: {
+          walletTruncated: `${wallet.slice(0,8)}...${wallet.slice(-8)}`,
+          smackedSeconds: updatedData.smackedSeconds,
+          totalSmackedSeconds: updatedData.totalSmackedSeconds,
+          rank: null,
+          registeredAt: existingData.createdAt || new Date().toISOString()
+        }
+      });
+    } else {
+      // Créer nouveau
+      const newVipData = {
+        ...vipData,
+        totalSmackedSeconds: parseInt(smackedSeconds),
+        createdAt: new Date().toISOString(),
+        updatedAt: new Date().toISOString()
+      };
+      await vipRef.set(newVipData);
+      
+      console.log(`📝 VIP wallet registered: ${wallet.slice(0,8)}...${wallet.slice(-8)} (+${smackedSeconds}s)`);
+      
+      res.status(201).json({
+        success: true,
+        message: 'Wallet successfully registered in VIP list!',
+        data: {
+          walletTruncated: `${wallet.slice(0,8)}...${wallet.slice(-8)}`,
+          smackedSeconds: newVipData.smackedSeconds,
+          totalSmackedSeconds: newVipData.totalSmackedSeconds,
+          rank: null,
+          registeredAt: newVipData.createdAt
+        }
       });
     }
 
+  } catch (error) {
+    console.error('❌ Error registering VIP wallet:', error);
     res.status(500).json({
       success: false,
       message: 'Error registering wallet',
@@ -1208,49 +1222,75 @@ app.post('/api/vip/register-wallet', async (req, res) => {
   }
 });
 
-// Endpoint pour obtenir le leaderboard VIP
+// Endpoint pour obtenir le leaderboard VIP avec Firebase
 app.get('/api/vip/leaderboard', async (req, res) => {
   try {
     const limit = parseInt(req.query.limit) || 50;
     const page = parseInt(req.query.page) || 1;
     const skip = (page - 1) * limit;
 
-    // Obtenir le leaderboard
-    const leaderboard = await VipSupporter.find({ isActive: true })
-      .sort({ totalSmackedSeconds: -1, createdAt: 1 })
-      .skip(skip)
-      .limit(limit)
-      .select('wallet totalSmackedSeconds smackedSeconds totalClicks createdAt')
-      .lean();
+    // Obtenir le leaderboard depuis Firebase
+    const snapshot = await db.collection('vip-supporters')
+      .orderBy('totalSmackedSeconds', 'desc')
+      .orderBy('createdAt', 'asc')
+      .get();
 
-    // Ajouter les rangs
-    const leaderboardWithRanks = leaderboard.map((supporter, index) => ({
-      rank: skip + index + 1,
-      walletTruncated: `${supporter.wallet.slice(0,8)}...${supporter.wallet.slice(-8)}`,
-      totalSmackedSeconds: supporter.totalSmackedSeconds,
-      registrationReward: supporter.smackedSeconds,
-      totalClicks: supporter.totalClicks,
-      joinedAt: supporter.createdAt
-    }));
+    if (snapshot.empty) {
+      return res.json({
+        success: true,
+        data: {
+          leaderboard: [],
+          pagination: { page, limit, total: 0 },
+          stats: { totalSupporters: 0, totalSecondsSmacked: 0, totalClicks: 0, averageSeconds: 0 }
+        }
+      });
+    }
+
+    // Traiter les données
+    const allSupporters = [];
+    let totalSeconds = 0;
+    let totalClicks = 0;
+
+    snapshot.forEach(doc => {
+      const data = doc.data();
+      allSupporters.push({
+        wallet: doc.id,
+        ...data
+      });
+      totalSeconds += data.totalSmackedSeconds || 0;
+      totalClicks += data.totalClicks || 0;
+    });
+
+    // Pagination
+    const paginatedLeaderboard = allSupporters
+      .slice(skip, skip + limit)
+      .map((supporter, index) => ({
+        rank: skip + index + 1,
+        walletTruncated: `${supporter.wallet.slice(0,8)}...${supporter.wallet.slice(-8)}`,
+        totalSmackedSeconds: supporter.totalSmackedSeconds || 0,
+        registrationReward: supporter.smackedSeconds || 0,
+        totalClicks: supporter.totalClicks || 0,
+        joinedAt: supporter.createdAt
+      }));
 
     // Statistiques globales
-    const stats = await VipSupporter.getTotalStats();
+    const stats = {
+      totalSupporters: allSupporters.length,
+      totalSecondsSmacked: totalSeconds,
+      totalClicks: totalClicks,
+      averageSeconds: allSupporters.length > 0 ? Math.round(totalSeconds / allSupporters.length) : 0
+    };
 
     res.json({
       success: true,
       data: {
-        leaderboard: leaderboardWithRanks,
+        leaderboard: paginatedLeaderboard,
         pagination: {
           page,
           limit,
-          total: stats.totalSupporters || 0
+          total: stats.totalSupporters
         },
-        stats: {
-          totalSupporters: stats.totalSupporters || 0,
-          totalSecondsSmacked: stats.totalSeconds || 0,
-          totalClicks: stats.totalClicks || 0,
-          averageSeconds: Math.round(stats.avgSeconds || 0)
-        }
+        stats: stats
       }
     });
 
@@ -1264,7 +1304,7 @@ app.get('/api/vip/leaderboard', async (req, res) => {
   }
 });
 
-// Endpoint pour obtenir les stats VIP d'un wallet spécifique
+// Endpoint pour obtenir les stats VIP d'un wallet spécifique avec Firebase
 app.get('/api/vip/wallet/:address', async (req, res) => {
   try {
     const { address } = req.params;
@@ -1276,33 +1316,35 @@ app.get('/api/vip/wallet/:address', async (req, res) => {
       });
     }
 
-    const supporter = await VipSupporter.findOne({ 
-      wallet: address,
-      isActive: true 
-    }).select('wallet totalSmackedSeconds smackedSeconds totalClicks createdAt');
+    // Chercher le wallet dans Firebase
+    const vipRef = db.collection('vip-supporters').doc(address);
+    const vipSnap = await vipRef.get();
 
-    if (!supporter) {
+    if (!vipSnap.exists) {
       return res.status(404).json({
         success: false,
         message: 'Wallet not found in VIP list'
       });
     }
 
-    // Calculer le rang
-    const rank = await VipSupporter.countDocuments({
-      totalSmackedSeconds: { $gt: supporter.totalSmackedSeconds },
-      isActive: true
-    }) + 1;
+    const supporterData = vipSnap.data();
+
+    // Calculer le rang (compter ceux qui ont plus de smacked seconds)
+    const higherRanksSnapshot = await db.collection('vip-supporters')
+      .where('totalSmackedSeconds', '>', supporterData.totalSmackedSeconds)
+      .get();
+    
+    const rank = higherRanksSnapshot.size + 1;
 
     res.json({
       success: true,
       data: {
-        walletTruncated: `${supporter.wallet.slice(0,8)}...${supporter.wallet.slice(-8)}`,
-        totalSmackedSeconds: supporter.totalSmackedSeconds,
-        registrationReward: supporter.smackedSeconds,
-        totalClicks: supporter.totalClicks,
+        walletTruncated: `${address.slice(0,8)}...${address.slice(-8)}`,
+        totalSmackedSeconds: supporterData.totalSmackedSeconds || 0,
+        registrationReward: supporterData.smackedSeconds || 0,
+        totalClicks: supporterData.totalClicks || 0,
         rank: rank,
-        joinedAt: supporter.createdAt
+        joinedAt: supporterData.createdAt
       }
     });
 
