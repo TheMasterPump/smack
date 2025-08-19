@@ -300,7 +300,7 @@ const LaunchCountdown = () => {
             letterSpacing: '6px',
             fontFamily: '"SevenSegment", "Digital-7", "SegmentedDisplay", monospace'
           }} className="countdown-labels">
-            <div style={{ width: '100px', textAlign: 'center' }}>DAYS</div>
+            <div style={{ width: '100px', textAlign: 'center', fontSize: '16px' }}>DAYS</div>
             <div style={{ width: '20px', textAlign: 'center', opacity: 0 }}>:</div>
             <div style={{ width: '100px', textAlign: 'center' }}>HOURS</div>
             <div style={{ width: '20px', textAlign: 'center', opacity: 0 }}>:</div>
