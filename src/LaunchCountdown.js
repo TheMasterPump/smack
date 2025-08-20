@@ -777,84 +777,79 @@ const LaunchCountdown = () => {
             </div>
           </div>
           
-          {/* Compteur global - toujours visible */}
+          {/* Compteur global communauté - toujours visible */}
           <div style={{
             textAlign: 'center',
-            marginTop: '20px'
+            marginTop: '20px',
+            background: 'rgba(251, 64, 35, 0.1)',
+            border: '1px solid rgba(251, 64, 35, 0.3)',
+            borderRadius: '15px',
+            padding: '15px 20px',
+            margin: '20px auto',
+            maxWidth: '400px'
           }}>
             <div style={{
-              marginTop: '10px',
-              fontSize: '16px',
+              fontSize: '12px',
+              color: '#ffaa04',
+              fontWeight: '600',
+              marginBottom: '5px',
+              textTransform: 'uppercase',
+              letterSpacing: '1px'
+            }}>
+              🔥 LIVE COMMUNITY SMACKS 🔥
+            </div>
+            <div style={{
+              fontSize: '20px',
               color: '#fb4023',
-              fontWeight: '700',
-              textShadow: '0 0 8px #fb4023',
+              fontWeight: '800',
+              textShadow: '0 0 10px #fb4023',
               animation: 'smackPulse 2s ease-in-out infinite',
               textAlign: 'center',
-              lineHeight: '1.3'
+              lineHeight: '1.2'
             }} className="countdown-time-saved">
-{globalStats.formattedTimeReduced} saved by {globalStats.totalClicks} global SMACKS!
+              {globalStats.totalClicks} SMACKS
+            </div>
+            <div style={{
+              fontSize: '14px',
+              color: '#13ff98',
+              fontWeight: '600',
+              marginTop: '5px',
+              textShadow: '0 0 8px #13ff98'
+            }}>
+              {globalStats.formattedTimeReduced} accelerated!
             </div>
           </div>
 
-          {/* Compteur de clics stylé */}
-          {clickCount > 0 && (
-            <div style={{
-              textAlign: 'center',
-              marginTop: '10px',
-              animation: 'smackPulse 1s ease-in-out infinite'
-            }}>
-              <div style={{
-                display: 'inline-block',
-                background: '#181B24',
-                color: '#fff',
-                padding: '12px 24px',
-                borderRadius: '25px',
-                border: '2px solid #fb4023',
-                fontSize: '18px',
-                fontWeight: '700',
-                textShadow: '0 0 10px #fb4023, 0 0 20px #fb4023, 0 0 30px #fb4023',
-                boxShadow: '0 0 20px #fb4023, 0 0 40px rgba(251, 64, 35, 0.5), 0 0 60px rgba(251, 64, 35, 0.3), inset 0 2px 5px rgba(251, 64, 35, 0.1)',
-                transform: 'perspective(100px) rotateX(0deg)',
-                letterSpacing: '1px',
-                position: 'relative',
-                overflow: 'hidden'
-              }} className="countdown-stats">
-{clickCount} SMACKS!
-              </div>
-            </div>
-          )}
           
-          {/* Bouton stats en bas de SMACK */}
-          {clickCount > 0 && (
-            <div style={{
-              textAlign: 'center',
-              marginTop: '15px'
-            }}>
-              <button
-                onClick={() => setShowStatsPopup(true)}
-                style={{
-                  background: 'transparent',
-                  border: '1px solid #ffaa04',
-                  color: '#ffaa04',
-                  padding: '8px 16px',
-                  borderRadius: '15px',
-                  fontSize: '12px',
-                  cursor: 'pointer',
-                  transition: 'all 0.2s ease'
-                }}
-                onMouseOver={(e) => {
-                  e.target.style.background = '#ffaa04';
-                  e.target.style.color = '#000';
-                }}
-                onMouseOut={(e) => {
-                  e.target.style.background = 'transparent';
-                  e.target.style.color = '#ffaa04';
-                }}
-              >
-                📊 View Stats
-              </button>
-            </div>
-          )}
+          {/* Bouton stats - toujours visible */}
+          <div style={{
+            textAlign: 'center',
+            marginTop: '15px'
+          }}>
+            <button
+              onClick={() => setShowStatsPopup(true)}
+              style={{
+                background: 'transparent',
+                border: '1px solid #ffaa04',
+                color: '#ffaa04',
+                padding: '8px 16px',
+                borderRadius: '15px',
+                fontSize: '12px',
+                cursor: 'pointer',
+                transition: 'all 0.2s ease'
+              }}
+              onMouseOver={(e) => {
+                e.target.style.background = '#ffaa04';
+                e.target.style.color = '#000';
+              }}
+              onMouseOut={(e) => {
+                e.target.style.background = 'transparent';
+                e.target.style.color = '#ffaa04';
+              }}
+            >
+              📊 View Stats
+            </button>
+          </div>
 
           {/* Message Twitter avec bouton X */}
           <div style={{
