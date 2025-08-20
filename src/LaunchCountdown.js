@@ -1030,7 +1030,8 @@ const LaunchCountdown = () => {
               marginBottom: '20px',
               lineHeight: '1.4'
             }}>
-              By dropping your wallet, you get VIP access to the Smack platform. By joining our VIP Telegram, you get early access to the $SMACK token launch.
+              Drop your SOL wallet, you get VIP access to the Smack platform.
+              Join the VIP Telegram and you'll get early access to the $SMACK token launch.
             </div>
 
             {/* Input pour wallet */}
