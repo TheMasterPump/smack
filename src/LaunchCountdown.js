@@ -782,7 +782,7 @@ const LaunchCountdown = () => {
           }}>
             <div style={{
               display: 'inline-block',
-              background: 'rgba(251, 64, 35, 0.1)',
+              background: 'transparent',
               border: '2px solid #fb4023',
               borderRadius: '25px',
               padding: '15px 30px',
