@@ -553,18 +553,18 @@ const LaunchCountdown = () => {
                               setSideMessages(prev => prev.filter(msg => msg.id !== newMessage.id));
                             }, 5000);
                           } else {
-                            // Message normal pour petites réductions - positionnement varié
+                            // Message normal pour petites réductions - uniquement autour du bouton
                             const positions = [
-                              { side: 'left', position: { top: '15%' } },    // Haut gauche
-                              { side: 'left', position: { top: '35%' } },    // Milieu gauche
-                              { side: 'left', position: { top: '55%' } },    // Bas gauche
-                              { side: 'right', position: { top: '15%' } },   // Haut droite
-                              { side: 'right', position: { top: '35%' } },   // Milieu droite
-                              { side: 'right', position: { top: '55%' } },   // Bas droite
-                              { side: 'top-left', position: { top: '-80px', left: '20%' } },   // Au-dessus côté gauche
-                              { side: 'top-right', position: { top: '-80px', left: '80%' } },  // Au-dessus côté droit
-                              { side: 'bottom-left', position: { top: 'calc(100% + 40px)', left: '20%' } },   // En dessous côté gauche
-                              { side: 'bottom-right', position: { top: 'calc(100% + 40px)', left: '80%' } }   // En dessous côté droit
+                              { side: 'left', position: { top: '20%' } },    // Gauche haut
+                              { side: 'left', position: { top: '40%' } },    // Gauche milieu
+                              { side: 'left', position: { top: '60%' } },    // Gauche bas
+                              { side: 'right', position: { top: '20%' } },   // Droite haut
+                              { side: 'right', position: { top: '40%' } },   // Droite milieu
+                              { side: 'right', position: { top: '60%' } },   // Droite bas
+                              { side: 'top-left', position: { top: '-30px', left: '20%' } },   // Au-dessus proche gauche
+                              { side: 'top-right', position: { top: '-30px', left: '80%' } },  // Au-dessus proche droite
+                              { side: 'bottom-left', position: { top: 'calc(100% + 15px)', left: '20%' } },   // En dessous proche gauche
+                              { side: 'bottom-right', position: { top: 'calc(100% + 15px)', left: '80%' } }   // En dessous proche droite
                             ];
                             
                             const randomPos = positions[Math.floor(Math.random() * positions.length)];
@@ -605,18 +605,18 @@ const LaunchCountdown = () => {
                         
                         const randomFunnyMessage = funnyMessages[Math.floor(Math.random() * funnyMessages.length)];
                         
-                        // Message d'encouragement - positionnement varié
+                        // Message d'encouragement - uniquement autour du bouton
                         const encouragementPositions = [
-                          { side: 'left', position: { top: '20%' } },    // Haut gauche
-                          { side: 'left', position: { top: '40%' } },    // Milieu gauche  
-                          { side: 'left', position: { top: '60%' } },    // Bas gauche
-                          { side: 'right', position: { top: '20%' } },   // Haut droite
-                          { side: 'right', position: { top: '40%' } },   // Milieu droite
-                          { side: 'right', position: { top: '60%' } },   // Bas droite
-                          { side: 'top-left', position: { top: '-60px', left: '15%' } },   // Au-dessus côté gauche
-                          { side: 'top-right', position: { top: '-60px', left: '85%' } },  // Au-dessus côté droit
-                          { side: 'bottom-left', position: { top: 'calc(100% + 20px)', left: '15%' } },   // En dessous côté gauche
-                          { side: 'bottom-right', position: { top: 'calc(100% + 20px)', left: '85%' } }   // En dessous côté droit
+                          { side: 'left', position: { top: '20%' } },    // Gauche haut
+                          { side: 'left', position: { top: '40%' } },    // Gauche milieu  
+                          { side: 'left', position: { top: '60%' } },    // Gauche bas
+                          { side: 'right', position: { top: '20%' } },   // Droite haut
+                          { side: 'right', position: { top: '40%' } },   // Droite milieu
+                          { side: 'right', position: { top: '60%' } },   // Droite bas
+                          { side: 'top-left', position: { top: '-25px', left: '15%' } },   // Au-dessus proche gauche
+                          { side: 'top-right', position: { top: '-25px', left: '85%' } },  // Au-dessus proche droite
+                          { side: 'bottom-left', position: { top: 'calc(100% + 10px)', left: '15%' } },   // En dessous proche gauche
+                          { side: 'bottom-right', position: { top: 'calc(100% + 10px)', left: '85%' } }   // En dessous proche droite
                         ];
                         
                         const randomEncPos = encouragementPositions[Math.floor(Math.random() * encouragementPositions.length)];
