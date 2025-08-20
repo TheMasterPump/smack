@@ -684,6 +684,14 @@ const LaunchCountdown = () => {
                     onMouseUp={(e) => {
                       e.currentTarget.style.transform = 'translateY(-20px) translateZ(20px)';
                     }}
+                    onTouchStart={(e) => {
+                      e.currentTarget.style.transform = 'translateY(-15px) translateZ(15px)';
+                      e.currentTarget.style.filter = 'brightness(1.05) saturate(1.08)';
+                    }}
+                    onTouchEnd={(e) => {
+                      e.currentTarget.style.transform = 'translateY(-20px) translateZ(20px)';
+                      e.currentTarget.style.filter = '';
+                    }}
                   >
                     {/* Multiples couches pour le cylindre */}
                     <div style={{position: 'absolute', width: '158px', height: '158px', background: 'linear-gradient(135deg, #550000 0%, #440000 100%)', borderRadius: '50%', transform: 'translateY(20px)', boxShadow: '0 5px 15px rgba(0, 0, 0, 0.8)'}} />
