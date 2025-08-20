@@ -791,7 +791,7 @@ const LaunchCountdown = () => {
               fontWeight: '800',
               textShadow: '0 0 15px #fb4023',
               animation: 'smackPulse 2s ease-in-out infinite',
-              boxShadow: '0 0 20px rgba(251, 64, 35, 0.3), inset 0 2px 5px rgba(251, 64, 35, 0.1)'
+              boxShadow: '0 0 20px rgba(255, 170, 4, 0.4), 0 0 40px rgba(255, 170, 4, 0.2), inset 0 2px 5px rgba(251, 64, 35, 0.1)'
             }}>
               {globalStats.totalClicks} SMACKS
             </div>
