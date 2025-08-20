@@ -795,12 +795,22 @@ const LaunchCountdown = () => {
               borderRadius: '25px',
               padding: '15px 30px',
               fontSize: '24px',
-              color: '#fb4023',
               fontWeight: '800',
               animation: 'smackPulse 2s ease-in-out infinite',
               boxShadow: '0 0 20px rgba(255, 170, 4, 0.4), 0 0 40px rgba(255, 170, 4, 0.2)'
             }}>
-              {globalStats.totalClicks} SMACKS
+              <span style={{
+                color: '#ffaa04',
+                textShadow: '0 0 10px #ffaa04, 0 0 20px #ffaa04'
+              }}>
+                {globalStats.totalClicks}
+              </span>
+              <span style={{
+                color: '#fb4023',
+                marginLeft: '8px'
+              }}>
+                SMACKS
+              </span>
             </div>
             <div style={{
               fontSize: '14px',
