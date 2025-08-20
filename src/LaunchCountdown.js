@@ -637,29 +637,27 @@ const LaunchCountdown = () => {
                         }, 1500);
                       }
                       
-                      // Envoyer le SMACK à Firebase
-                      if (reductionSeconds > 0) {
-                        try {
-                          const smackResponse = await fetch('/api/smack', {
-                            method: 'POST',
-                            headers: {
-                              'Content-Type': 'application/json',
-                            },
-                            body: JSON.stringify({
-                              timeReduced: reductionSeconds,
-                              sessionId: sessionId,
-                              userAgent: navigator.userAgent
-                            })
-                          });
-                          
-                          const smackResult = await smackResponse.json();
-                          if (smackResult.success) {
-                            // Mettre à jour les stats globales avec les nouvelles données
-                            setGlobalStats(smackResult.data.globalStats);
-                          }
-                        } catch (error) {
-                          console.log('Could not send SMACK to Firebase:', error);
+                      // Envoyer le SMACK à Firebase à CHAQUE clic
+                      try {
+                        const smackResponse = await fetch('/api/smack', {
+                          method: 'POST',
+                          headers: {
+                            'Content-Type': 'application/json',
+                          },
+                          body: JSON.stringify({
+                            timeReduced: reductionSeconds,
+                            sessionId: sessionId,
+                            userAgent: navigator.userAgent
+                          })
+                        });
+                        
+                        const smackResult = await smackResponse.json();
+                        if (smackResult.success) {
+                          // Mettre à jour les stats globales avec les nouvelles données
+                          setGlobalStats(smackResult.data.globalStats);
                         }
+                      } catch (error) {
+                        console.log('Could not send SMACK to Firebase:', error);
                       }
                       
                       // Sauvegarder les données
