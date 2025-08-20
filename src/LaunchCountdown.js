@@ -775,43 +775,31 @@ const LaunchCountdown = () => {
             </div>
           </div>
           
-          {/* Compteur global communauté - toujours visible */}
+          {/* Compteur global SMACK */}
           <div style={{
             textAlign: 'center',
-            marginTop: '20px',
-            background: 'rgba(251, 64, 35, 0.1)',
-            border: '1px solid rgba(251, 64, 35, 0.3)',
-            borderRadius: '15px',
-            padding: '15px 20px',
-            margin: '20px auto',
-            maxWidth: '400px'
+            marginTop: '20px'
           }}>
             <div style={{
-              fontSize: '12px',
-              color: '#ffaa04',
-              fontWeight: '600',
-              marginBottom: '5px',
-              textTransform: 'uppercase',
-              letterSpacing: '1px'
-            }}>
-              🔥 LIVE COMMUNITY SMACKS 🔥
-            </div>
-            <div style={{
-              fontSize: '20px',
+              display: 'inline-block',
+              background: 'rgba(251, 64, 35, 0.1)',
+              border: '2px solid #fb4023',
+              borderRadius: '25px',
+              padding: '15px 30px',
+              fontSize: '24px',
               color: '#fb4023',
               fontWeight: '800',
-              textShadow: '0 0 10px #fb4023',
+              textShadow: '0 0 15px #fb4023',
               animation: 'smackPulse 2s ease-in-out infinite',
-              textAlign: 'center',
-              lineHeight: '1.2'
-            }} className="countdown-time-saved">
+              boxShadow: '0 0 20px rgba(251, 64, 35, 0.3), inset 0 2px 5px rgba(251, 64, 35, 0.1)'
+            }}>
               {globalStats.totalClicks} SMACKS
             </div>
             <div style={{
               fontSize: '14px',
               color: '#13ff98',
               fontWeight: '600',
-              marginTop: '5px',
+              marginTop: '10px',
               textShadow: '0 0 8px #13ff98'
             }}>
               {globalStats.formattedTimeReduced} accelerated!
