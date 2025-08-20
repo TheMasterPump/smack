@@ -789,7 +789,6 @@ const LaunchCountdown = () => {
               fontSize: '24px',
               color: '#fb4023',
               fontWeight: '800',
-              textShadow: '0 0 15px #fb4023',
               animation: 'smackPulse 2s ease-in-out infinite',
               boxShadow: '0 0 20px rgba(255, 170, 4, 0.4), 0 0 40px rgba(255, 170, 4, 0.2)'
             }}>
