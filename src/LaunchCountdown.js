@@ -440,7 +440,7 @@ const LaunchCountdown = () => {
                       }
                       // Petites réductions - 1 sur 4/5 clics environ (ROUGE)
                       else if (random < 0.25) { // 25% chance
-                        const smallReductions = [2, 3, 4, 5, 6, 7, 8, 10];
+                        const smallReductions = [1, 2, 3];
                         reductionSeconds = smallReductions[Math.floor(Math.random() * smallReductions.length)];
                         const smallMessages = [
                           `HELL YEAH, ${reductionSeconds}s SMACKED OFF! 🔥`,
@@ -457,13 +457,13 @@ const LaunchCountdown = () => {
                       
                       // Gérer les clics qui ne donnent pas de réduction de temps
                       if (reductionSeconds > 0) {
-                        // Limite maximale: 2 heures = 7200 secondes
-                        const maxReduction = 7200; 
+                        // Limite maximale: 3 heures = 10800 secondes
+                        const maxReduction = 10800; 
                         const currentReduction = timeReduced;
                         
                         if (currentReduction >= maxReduction) {
                           // Limite atteinte - message spécial
-                          specialMessage = `🏁 MAX SPEED REACHED! Community saved 2 hours! No more acceleration possible.`;
+                          specialMessage = `🏁 MAX SPEED REACHED! Community saved 3 hours! No more acceleration possible.`;
                           const newMessage = {
                             id: Date.now(),
                             text: specialMessage,
@@ -478,6 +478,8 @@ const LaunchCountdown = () => {
                             setSideMessages(prev => prev.filter(msg => msg.id !== newMessage.id));
                           }, 6000);
                           
+                          // ✅ ARRÊTER ICI - ne pas continuer à traiter
+                          return;
                         } else {
                           // Appliquer la réduction avec limite
                           const newTimeReduced = Math.min(currentReduction + reductionSeconds, maxReduction);
