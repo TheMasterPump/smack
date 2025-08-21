@@ -410,36 +410,8 @@ const LaunchCountdown = () => {
                       const random = Math.random();
                       const extraRandom = Math.random(); // Double aléatoire pour plus de variabilité
                       
-                      // Gros jackpots ultra rares (après beaucoup de clics)
-                      if (newClickCount >= 1000 && random < 0.001 && extraRandom < 0.5) { 
-                        reductionSeconds = 300; // 5 minutes - ultra rare
-                        specialMessage = `🌟 MYTHICAL! -5 MINUTES! Unbelievable! (${newClickCount} clicks)`;
-                        isSpecialBonus = true;
-                      } else if (newClickCount >= 500 && random < 0.003 && extraRandom < 0.3) { 
-                        reductionSeconds = 240; // 4 minutes
-                        specialMessage = `🔥 LEGENDARY! -4 MINUTES! Ultimate boost! (${newClickCount} clicks)`;
-                        isSpecialBonus = true;
-                      } else if (newClickCount >= 200 && random < 0.008 && extraRandom < 0.6) { 
-                        reductionSeconds = 120; // 2 minutes
-                        specialMessage = `💎 EPIC! -2 MINUTES! Incredible! (${newClickCount} clicks)`;
-                        isSpecialBonus = true;
-                      } else if (newClickCount >= 100 && random < 0.015 && extraRandom < 0.4) { 
-                        reductionSeconds = 60; // 1 minute
-                        specialMessage = `🚀 MEGA BOOST! -1 MINUTE! Amazing! (${newClickCount} clicks)`;
-                        isSpecialBonus = true;
-                      } 
-                      // Bonus moyens - chances variables
-                      else if (random < 0.08 && extraRandom > 0.5) { // ~4% chance réelle
-                        reductionSeconds = 30; // 30 secondes
-                        specialMessage = `⚡ POWER UP! -30 seconds! Nice! (${newClickCount} clicks)`;
-                        isSpecialBonus = true;
-                      } else if (random < 0.12 && extraRandom < 0.7) { // ~8% chance réelle
-                        reductionSeconds = 20; // 20 secondes
-                        specialMessage = `💪 BOOST! -20 seconds! Good! (${newClickCount} clicks)`;
-                        isSpecialBonus = true;
-                      }
                       // Petites réductions - 1 sur 4/5 clics environ (ROUGE)
-                      else if (random < 0.25) { // 25% chance
+                      if (random < 0.25) { // 25% chance
                         const smallReductions = [1, 2, 3];
                         reductionSeconds = smallReductions[Math.floor(Math.random() * smallReductions.length)];
                         const smallMessages = [
