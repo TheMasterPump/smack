@@ -322,9 +322,12 @@ app.post('/api/token', async (req, res) => {
     const token = req.body;
     
     // Validation basique
-    if (!token.name || !token.symbol || !token.description) {
-      return res.status(400).json({ error: "Name, symbol and description are required" });
+    if (!token.name || !token.ticker || !token.description) {
+      return res.status(400).json({ error: "Name, ticker and description are required" });
     }
+    
+    // Compatibility: use ticker as symbol for backend
+    token.symbol = token.ticker;
 
     // Auto-générer les boutons sociaux
     if (!token.buttons) {
