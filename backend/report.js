@@ -1,8 +1,6 @@
 const express = require('express');
 const router = express.Router();
-require('./db'); // force la connexion MongoDB
-const Report = require('./models/report');
-const BannedUser = require('./models/BannedUser');
+const { db } = require('./firebase'); // utilise Firebase au lieu de MongoDB
 
 // AJOUT : import du middleware d'auth par wallet
 const authWallet = require('./authWallet');

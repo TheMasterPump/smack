@@ -262,7 +262,7 @@ export async function buyTokens(wallet, connection, mintPubkey, tokenAmount, max
     // Enregistrer l'achat dans le backend pour le suivi
     try {
       const mintAddress = typeof mintKey === 'string' ? mintKey : mintKey.toBase58();
-      await fetch(`http://localhost:4000/api/simulate-purchase`, {
+      await fetch(`/api/simulate-purchase`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({

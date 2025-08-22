@@ -11,7 +11,7 @@ export default function DaoVotePage() {
 
   // Charger les vraies données depuis une API (adapter l'URL selon ton backend)
   useEffect(() => {
-    fetch("http://localhost:3001/api/proposals") // ← Mets ici ton URL API
+    fetch("/api/api/proposals") // ← Mets ici ton URL API
       .then((res) => res.json())
       .then((data) => {
         setProposals(data);

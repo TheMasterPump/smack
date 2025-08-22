@@ -902,7 +902,7 @@ function TokenPageContent({ token, wallet, slug }) {
       const encodedMessage = new TextEncoder().encode(message);
       const signature = await wallet.signMessage(encodedMessage, "utf8");
       const signatureBase64 = Buffer.from(signature).toString("base64");
-      const res = await fetch(`http://localhost:4000/api/token/${token.slug}/claim`, {
+      const res = await fetch(`/api/token/${token.slug}/claim`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
@@ -1176,7 +1176,7 @@ export default function TokenPage() {
   const [token, setToken] = useState(null);
 
   useEffect(() => {
-    fetch(`http://localhost:4000/api/token/${slug}`)
+    fetch(`/api/token/${slug}`)
       .then(res => {
         if (!res.ok) throw new Error('Token not found');
         return res.json();

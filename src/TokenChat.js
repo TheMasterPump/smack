@@ -2,7 +2,7 @@ import React, { useEffect, useState, useRef } from "react";
 import { io } from "socket.io-client";
 import EmojiPicker from "emoji-picker-react";
 
-const SOCKET_URL = "http://localhost:4000";
+const SOCKET_URL = "/api";
 const GIPHY_API_KEY = "KXCpJSf9VS089NhpHPN6SzrRLKRE8n7c";
 
 const logoSVG = (
@@ -139,7 +139,7 @@ useEffect(() => {
     setUploading(true);
     const form = new FormData();
     form.append("image", file);
-    const res = await fetch("http://localhost:4000/api/upload", {
+    const res = await fetch("/api/upload", {
       method: "POST",
       body: form
     });
@@ -269,7 +269,7 @@ useEffect(() => {
   async function handleSendReport(reason) {
   // SEND to backend!
   try {
-    const res = await fetch("http://localhost:4000/api/report", {
+    const res = await fetch("/api/report", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({

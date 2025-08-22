@@ -115,7 +115,7 @@ export const useTokenPriceStream = (mintAddress) => {
     
     const fetchPrice = async () => {
       try {
-        const response = await fetch(`http://localhost:4000/api/token-data/${mintAddress}`);
+        const response = await fetch(`/api/token-data/${mintAddress}`);
         const data = await response.json();
         
         const newPrice = {

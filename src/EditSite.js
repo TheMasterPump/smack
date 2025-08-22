@@ -14,7 +14,7 @@ export default function EditSite() {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    fetch(`http://localhost:4000/api/token/${slug}`)
+    fetch(`/api/token/${slug}`)
       .then(res => res.json())
       .then(data => {
         setToken(data);
@@ -37,7 +37,7 @@ export default function EditSite() {
     }
     try {
       const updatedToken = { ...token, description: content };
-      const res = await fetch(`http://localhost:4000/api/token/${slug}`, {
+      const res = await fetch(`/api/token/${slug}`, {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(updatedToken),

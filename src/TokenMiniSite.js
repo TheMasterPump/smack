@@ -11,7 +11,7 @@ export default function TokenMiniSite() {
   const navigate = useNavigate();
 
   useEffect(() => {
-    fetch(`http://localhost:4000/api/token/${slug}`)
+    fetch(`/api/token/${slug}`)
       .then(res => res.json())
       .then(data => setToken(data));
   }, [slug]);

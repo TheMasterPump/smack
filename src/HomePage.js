@@ -20,7 +20,7 @@ export default function HomePage() {
   }
 
   async function fetchTokens() {
-    const res = await fetch("http://localhost:4000/api/tokens");
+    const res = await fetch("/api/tokens");
     if (!res.ok) return;
     const data = await res.json();
     setTokens(data);

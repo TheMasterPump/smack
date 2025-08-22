@@ -5,7 +5,7 @@ export default function TokenList() {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    fetch("http://localhost:4000/api/tokens")
+    fetch("/api/tokens")
       .then(res => res.json())
       .then(data => {
         setTokens(data);

@@ -23,7 +23,7 @@ app.use(helmet());
 app.use(express.json({ limit: '1mb' }));
 
 // Health check
-app.get('/health', (req, res) => {
+app.get('/api/health', (req, res) => {
   res.json({ status: 'Firebase Functions OK', timestamp: new Date().toISOString() });
 });
 

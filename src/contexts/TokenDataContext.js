@@ -12,7 +12,7 @@ export function TokenDataProvider({ children, mintAddress, refreshKey, autoRefre
     setLoading(true);
     setError(null);
     try {
-      const res = await fetch(`http://localhost:4000/api/token-data/${mintAddress}`);
+      const res = await fetch(`/api/token-data/${mintAddress}`);
       if (!res.ok) throw new Error(`HTTP ${res.status}`);
       const data = await res.json();
       setTokenData(data);

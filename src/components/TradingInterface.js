@@ -82,7 +82,7 @@ const TradingInterface = ({ mintAddress }) => {
         try {
           if (activeTab === 'buy') {
             const solCostInLamports = Math.round(simulationResult.totalCost * 1e9); // Convertir en lamports
-            await fetch('http://localhost:4000/api/simulate-purchase', {
+            await fetch('/api/simulate-purchase', {
               method: 'POST',
               headers: { 'Content-Type': 'application/json' },
               body: JSON.stringify({
@@ -96,7 +96,7 @@ const TradingInterface = ({ mintAddress }) => {
           } else {
             // Pour les ventes, tokens négatifs et SOL négatif 
             const solReceivedInLamports = Math.round(simulationResult.netSolOutput * 1e9);
-            await fetch('http://localhost:4000/api/simulate-purchase', {
+            await fetch('/api/simulate-purchase', {
               method: 'POST',
               headers: { 'Content-Type': 'application/json' },
               body: JSON.stringify({

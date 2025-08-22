@@ -77,7 +77,7 @@ export default function TokenForm() {
     }
     setIsGenerating(true);
     try {
-      const res = await fetch("http://localhost:4000/api/generate-ai", {
+      const res = await fetch("/api/generate-ai", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ prompt: form.aiPrompt }),
@@ -114,7 +114,7 @@ export default function TokenForm() {
     if (form.imgType === "upload" && imageFile) {
       const data = new FormData();
       data.append("image", imageFile);
-      const res = await fetch("http://localhost:4000/api/upload", {
+      const res = await fetch("/api/upload", {
         method: "POST",
         body: data,
       });
@@ -245,7 +245,7 @@ export default function TokenForm() {
         .replace(/(^-|-$)/g, "");
 
       console.log('💾 Sauvegarde en DB...');
-      const saveToken = await fetch("http://localhost:4000/api/token", {
+      const saveToken = await fetch("/api/token", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
@@ -440,9 +440,11 @@ export default function TokenForm() {
                 <label>Website theme</label>
                 <select name="theme" value={form.theme} onChange={handleChange}>
                   <option value="dark">Dark</option>
+                  <option value="light">Light</option>
                   <option value="cartoon">Cartoon</option>
                   <option value="pixel">Pixel</option>
-                  <option value="light">Light</option>
+                  <option value="bonkOrange">Bonk Orange</option>
+                  <option value="pepeGreen">Pepe Green</option>
                 </select>
               </>
             )}

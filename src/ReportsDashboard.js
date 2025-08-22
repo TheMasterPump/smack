@@ -12,7 +12,7 @@ export default function ReportsDashboard() {
 
   // --------- CHARGEMENT DES REPORTS ----------
   useEffect(() => {
-    fetch("http://localhost:4000/api/report")
+    fetch("/api/report")
       .then(res => res.json())
       .then(data => {
         let arr = [];
@@ -60,7 +60,7 @@ export default function ReportsDashboard() {
     if (!wallet || !signature) return alert("Connecte et signe avec ton wallet admin d'abord !");
     if (!user) return alert("Aucun user à bannir.");
     if (!chatRoom) return alert("Aucune room fournie.");
-    const res = await fetch("http://localhost:4000/api/report/ban", {
+    const res = await fetch("/api/report/ban", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
