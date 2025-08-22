@@ -181,11 +181,19 @@ export default function TokenForm() {
     
     try {
       console.log('🔧 Création du token on-chain...');
+      setFormError("Étape 1/4: Génération des clés...");
       
       // 1. CREATE TOKEN ON-CHAIN
       const mint = Keypair.generate();
+      console.log('🔑 Keypair généré:', mint.publicKey.toBase58());
+      
+      setFormError("Étape 2/4: Calcul des frais de rent...");
       const lamports = await connection.getMinimumBalanceForRentExemption(MINT_SIZE);
+      console.log('💰 Lamports requis:', lamports);
+      
+      setFormError("Étape 3/4: Création du token account...");
       const ata = await getAssociatedTokenAddress(mint.publicKey, wallet.publicKey);
+      console.log('🏦 ATA:', ata.toBase58());
 
       const transaction = new Transaction().add(
         SystemProgram.createAccount({

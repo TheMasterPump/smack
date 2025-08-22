@@ -10,9 +10,14 @@ const db = admin.firestore();
 
 // Import des utilitaires Solana
 const solanaWeb3 = require("@solana/web3.js");
-const { PublicKey, Connection } = solanaWeb3;
+const { PublicKey, Connection, LAMPORTS_PER_SOL } = solanaWeb3;
 const nacl = require("tweetnacl");
 const anchor = require('@project-serum/anchor');
+
+// Constants for fee verification
+const FEE_RECEIVER = "8hXGeqAkS2GezfSiCVjfNzqjobLmognqJsqyA75ZL79R";
+const FEE_AMOUNT = 0.06 * LAMPORTS_PER_SOL;
+const FEE_CONNECTION = new Connection("https://api.devnet.solana.com", "confirmed");
 
 // Créer l'app Express
 const app = express();
@@ -21,6 +26,34 @@ const app = express();
 app.use(cors({ origin: true }));
 app.use(helmet());
 app.use(express.json({ limit: '1mb' }));
+
+// Fee transaction verification function
+async function verifyFeeTransaction(signature, userWalletPubkey) {
+  console.log(`[FEE CHECK] Vérification fee tx ${signature} pour user ${userWalletPubkey}`);
+  const tx = await FEE_CONNECTION.getTransaction(signature, { commitment: "confirmed" });
+  if (!tx) throw new Error("Transaction introuvable !");
+  if (tx.meta && tx.meta.err) throw new Error("Transaction failed!");
+
+  // Extract addresses
+  const keys = tx.transaction.message.accountKeys.map(k =>
+    typeof k === "string" ? k : (k.toBase58 ? k.toBase58() : k.pubkey)
+  );
+  const fromIndex = keys.findIndex(k => k === userWalletPubkey);
+  const toIndex = keys.findIndex(k => k === FEE_RECEIVER);
+  if (fromIndex === -1 || toIndex === -1) throw new Error("Wallets not found in transaction!");
+
+  const pre = tx.meta.preBalances;
+  const post = tx.meta.postBalances;
+  const sent = pre[fromIndex] - post[fromIndex];
+  const received = post[toIndex] - pre[toIndex];
+
+  // Accept if received ≥ 0.06 SOL (accounts for transaction fees)
+  if (sent < FEE_AMOUNT || received < FEE_AMOUNT) {
+    throw new Error(`Fee insuffisante: envoyé ${sent/LAMPORTS_PER_SOL} SOL, requis ${FEE_AMOUNT/LAMPORTS_PER_SOL} SOL`);
+  }
+  
+  console.log(`✅ Fee validée: ${received/LAMPORTS_PER_SOL} SOL reçu`);
+}
 
 // Health check
 app.get('/api/health', (req, res) => {
@@ -320,6 +353,8 @@ function formatTime(seconds) {
 app.post('/api/token', async (req, res) => {
   try {
     const token = req.body;
+    console.log("\n======== [NEW TOKEN REQUEST] ========");
+    console.log("[STEP 1] Données reçues pour token :", token);
     
     // Validation basique
     if (!token.name || !token.ticker || !token.description) {
@@ -328,6 +363,20 @@ app.post('/api/token', async (req, res) => {
     
     // Compatibility: use ticker as symbol for backend
     token.symbol = token.ticker;
+
+    // 1️⃣ Vérifie la FEE AVANT d'enregistrer
+    try {
+      const { feeSignature, creatorWallet } = token;
+      if (!feeSignature || !creatorWallet) {
+        return res.status(400).json({ error: "Fee signature and creator wallet are required" });
+      }
+      console.log("[STEP 2] Vérification de la fee...");
+      await verifyFeeTransaction(feeSignature, creatorWallet);
+      console.log("[STEP 2] ✅ Fee validée !");
+    } catch (e) {
+      console.error("[FEE CHECK ERROR]", e);
+      return res.status(400).json({ error: e.message || "Fee transaction not valid" });
+    }
 
     // Auto-générer les boutons sociaux
     if (!token.buttons) {
@@ -366,6 +415,50 @@ app.post('/api/token', async (req, res) => {
   } catch (e) {
     console.error("❌ Erreur création token :", e);
     res.status(500).json({ error: e.message || "Failed to create token" });
+  }
+});
+
+// Endpoint de test simple pour debugger
+app.post('/api/test-token', async (req, res) => {
+  try {
+    console.log('🧪 Test token creation:', req.body);
+    
+    const token = req.body;
+    
+    // Validation basique
+    if (!token.name || !token.ticker || !token.description) {
+      return res.status(400).json({ 
+        success: false,
+        error: "Name, ticker and description are required" 
+      });
+    }
+    
+    // Simulation d'une sauvegarde simple
+    const testToken = {
+      slug: token.slug || token.name.toLowerCase().replace(/[^a-z0-9]+/g, "-"),
+      name: token.name,
+      ticker: token.ticker,
+      description: token.description,
+      theme: token.theme || 'dark',
+      createdAt: new Date().toISOString(),
+      version: "test",
+      status: "created_successfully"
+    };
+    
+    console.log('✅ Test token created:', testToken);
+    
+    res.json({ 
+      success: true, 
+      token: testToken,
+      message: "Test token created successfully!" 
+    });
+    
+  } catch (e) {
+    console.error("❌ Erreur test token:", e);
+    res.status(500).json({ 
+      success: false,
+      error: e.message || "Test token creation failed" 
+    });
   }
 });
 
