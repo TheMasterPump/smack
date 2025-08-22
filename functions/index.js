@@ -4,7 +4,6 @@ const express = require('express');
 const cors = require('cors');
 const helmet = require('helmet');
 const axios = require('axios');
-require('dotenv').config();
 
 // Initialiser Firebase Admin
 admin.initializeApp();
@@ -427,7 +426,8 @@ app.post('/api/upload', async (req, res) => {
   try {
     console.log('📤 Upload endpoint called');
     
-    if (!process.env.CLOUDFLARE_API_KEY || !process.env.CLOUDFLARE_ACCOUNT_ID) {
+    const config = functions.config();
+    if (!config.cloudflare || !config.cloudflare.api_key || !config.cloudflare.account_id) {
       console.error('❌ Missing Cloudflare credentials');
       return res.status(500).json({ 
         error: "Cloudflare credentials not configured",
@@ -455,11 +455,11 @@ app.post('/api/upload', async (req, res) => {
     console.log('🚀 Uploading to Cloudflare...');
     
     const response = await axios.post(
-      `https://api.cloudflare.com/client/v4/accounts/${process.env.CLOUDFLARE_ACCOUNT_ID}/images/v1`,
+      `https://api.cloudflare.com/client/v4/accounts/${config.cloudflare.account_id}/images/v1`,
       formData,
       {
         headers: {
-          'Authorization': `Bearer ${process.env.CLOUDFLARE_API_KEY}`,
+          'Authorization': `Bearer ${config.cloudflare.api_key}`,
           ...formData.getHeaders()
         }
       }
@@ -496,7 +496,8 @@ app.post('/api/generate-ai', async (req, res) => {
   try {
     console.log('🎨 AI image generation endpoint called');
     
-    if (!process.env.OPENAI_API_KEY) {
+    const config = functions.config();
+    if (!config.openai || !config.openai.api_key) {
       console.error('❌ Missing OpenAI API key');
       return res.status(500).json({ 
         error: "OpenAI API key not configured",
@@ -528,7 +529,7 @@ app.post('/api/generate-ai', async (req, res) => {
       },
       {
         headers: {
-          'Authorization': `Bearer ${process.env.OPENAI_API_KEY}`,
+          'Authorization': `Bearer ${config.openai.api_key}`,
           'Content-Type': 'application/json'
         }
       }
@@ -549,11 +550,11 @@ app.post('/api/generate-ai', async (req, res) => {
       console.log('📤 Uploading AI image to Cloudflare...');
       
       const cloudflareResponse = await axios.post(
-        `https://api.cloudflare.com/client/v4/accounts/${process.env.CLOUDFLARE_ACCOUNT_ID}/images/v1`,
+        `https://api.cloudflare.com/client/v4/accounts/${config.cloudflare.account_id}/images/v1`,
         formData,
         {
           headers: {
-            'Authorization': `Bearer ${process.env.CLOUDFLARE_API_KEY}`,
+            'Authorization': `Bearer ${config.cloudflare.api_key}`,
             ...formData.getHeaders()
           }
         }
