@@ -242,8 +242,8 @@ export default function TokenForm() {
         console.log('✅ Bonding curve créée:', bondingCurvePda);
       } catch (bcError) {
         console.error("❌ Bonding curve failed:", bcError);
-        // Continue without bonding curve for now
-        bondingCurvePda = "";
+        console.log("⚠️ Continuation sans bonding curve - le token sera quand même sauvegardé");
+        bondingCurvePda = ""; // Continue without bonding curve but save the token
       }
       
       // 3. SAVE EVERYTHING IN DB (with all data)
@@ -253,25 +253,41 @@ export default function TokenForm() {
         .replace(/(^-|-$)/g, "");
 
       console.log('💾 Sauvegarde en DB...');
+      
+      // Vérification des données critiques avant sauvegarde
+      if (!form.name || !form.ticker || !form.description) {
+        console.error('❌ Données de formulaire manquantes!', {
+          name: form.name,
+          ticker: form.ticker, 
+          description: form.description
+        });
+        throw new Error('Les données du formulaire ont été perdues');
+      }
+      
+      const tokenData = {
+        slug,
+        name: form.name,
+        ticker: form.ticker,
+        description: form.description,
+        twitter: form.twitter,
+        telegram: form.telegram,
+        websiteOption: form.websiteOption,
+        customSiteUrl: form.customSiteUrl,
+        theme: form.theme,
+        image: imageUrl,
+        creatorWallet: wallet.publicKey.toBase58(),
+        feeSignature, // preuve du paiement
+        mintAddress, // ✅ Address du token créé
+        bondingCurve: bondingCurvePda // ✅ PDA de la bonding curve
+      };
+      
+      console.log('🔍 Données à envoyer:', tokenData);
+      console.log('🔍 Form state:', form);
+      
       const saveToken = await fetch("/api/token", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          slug,
-          name: form.name,
-          ticker: form.ticker,
-          description: form.description,
-          twitter: form.twitter,
-          telegram: form.telegram,
-          websiteOption: form.websiteOption,
-          customSiteUrl: form.customSiteUrl,
-          theme: form.theme,
-          image: imageUrl,
-          creatorWallet: wallet.publicKey.toBase58(),
-          feeSignature, // preuve du paiement
-          mintAddress, // ✅ Address du token créé
-          bondingCurve: bondingCurvePda // ✅ PDA de la bonding curve
-        }),
+        body: JSON.stringify(tokenData),
       });
 
       if (!saveToken.ok) {
