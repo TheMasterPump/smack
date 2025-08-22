@@ -3,6 +3,8 @@ const admin = require('firebase-admin');
 const express = require('express');
 const cors = require('cors');
 const helmet = require('helmet');
+const axios = require('axios');
+require('dotenv').config();
 
 // Initialiser Firebase Admin
 admin.initializeApp();
@@ -18,6 +20,8 @@ const anchor = require('@project-serum/anchor');
 const FEE_RECEIVER = "8hXGeqAkS2GezfSiCVjfNzqjobLmognqJsqyA75ZL79R";
 const FEE_AMOUNT = 0.06 * LAMPORTS_PER_SOL;
 const FEE_CONNECTION = new Connection("https://api.devnet.solana.com", "confirmed");
+
+// TODO: Upload functionality will be added later
 
 // Créer l'app Express
 const app = express();
@@ -415,6 +419,178 @@ app.post('/api/token', async (req, res) => {
   } catch (e) {
     console.error("❌ Erreur création token :", e);
     res.status(500).json({ error: e.message || "Failed to create token" });
+  }
+});
+
+// ========== UPLOAD ENDPOINTS ==========
+app.post('/api/upload', async (req, res) => {
+  try {
+    console.log('📤 Upload endpoint called');
+    
+    if (!process.env.CLOUDFLARE_API_KEY || !process.env.CLOUDFLARE_ACCOUNT_ID) {
+      console.error('❌ Missing Cloudflare credentials');
+      return res.status(500).json({ 
+        error: "Cloudflare credentials not configured",
+        message: "Environment variables missing"
+      });
+    }
+
+    // For now, handle base64 image data from request body
+    const { imageData, fileName } = req.body;
+    
+    if (!imageData) {
+      return res.status(400).json({ 
+        error: "No image data provided",
+        message: "Please provide imageData in the request body"
+      });
+    }
+
+    // Convert base64 to buffer
+    const buffer = Buffer.from(imageData.replace(/^data:image\/[a-z]+;base64,/, ''), 'base64');
+    
+    const FormData = require('form-data');
+    const formData = new FormData();
+    formData.append('file', buffer, fileName || 'token-image.png');
+
+    console.log('🚀 Uploading to Cloudflare...');
+    
+    const response = await axios.post(
+      `https://api.cloudflare.com/client/v4/accounts/${process.env.CLOUDFLARE_ACCOUNT_ID}/images/v1`,
+      formData,
+      {
+        headers: {
+          'Authorization': `Bearer ${process.env.CLOUDFLARE_API_KEY}`,
+          ...formData.getHeaders()
+        }
+      }
+    );
+
+    if (response.data.success) {
+      const imageUrl = response.data.result.variants[0];
+      console.log('✅ Image uploaded successfully:', imageUrl);
+      
+      res.json({
+        success: true,
+        imageUrl: imageUrl,
+        message: "Image uploaded successfully to Cloudflare"
+      });
+    } else {
+      console.error('❌ Cloudflare upload failed:', response.data);
+      res.status(500).json({
+        error: "Failed to upload image to Cloudflare",
+        details: response.data.errors
+      });
+    }
+
+  } catch (error) {
+    console.error('❌ Upload error:', error);
+    res.status(500).json({
+      error: "Upload failed",
+      message: error.message
+    });
+  }
+});
+
+// ========== AI IMAGE GENERATION ENDPOINT ==========
+app.post('/api/generate-ai', async (req, res) => {
+  try {
+    console.log('🎨 AI image generation endpoint called');
+    
+    if (!process.env.OPENAI_API_KEY) {
+      console.error('❌ Missing OpenAI API key');
+      return res.status(500).json({ 
+        error: "OpenAI API key not configured",
+        message: "Environment variables missing"
+      });
+    }
+
+    const { prompt, name, ticker } = req.body;
+    
+    if (!prompt || !name || !ticker) {
+      return res.status(400).json({ 
+        error: "Missing required fields",
+        message: "Please provide prompt, name, and ticker"
+      });
+    }
+
+    const enhancedPrompt = `Create a meme token logo for "${name}" (${ticker}): ${prompt}. Make it colorful, fun, and suitable for cryptocurrency. Style should be modern and appealing.`;
+    
+    console.log('🚀 Generating AI image with OpenAI...');
+    
+    const openAIResponse = await axios.post(
+      'https://api.openai.com/v1/images/generations',
+      {
+        model: "dall-e-3",
+        prompt: enhancedPrompt,
+        n: 1,
+        size: "1024x1024",
+        quality: "standard"
+      },
+      {
+        headers: {
+          'Authorization': `Bearer ${process.env.OPENAI_API_KEY}`,
+          'Content-Type': 'application/json'
+        }
+      }
+    );
+
+    if (openAIResponse.data.data && openAIResponse.data.data[0]) {
+      const imageUrl = openAIResponse.data.data[0].url;
+      console.log('✅ AI image generated successfully');
+      
+      // Download the image and upload to Cloudflare
+      const imageResponse = await axios.get(imageUrl, { responseType: 'arraybuffer' });
+      const imageBuffer = Buffer.from(imageResponse.data);
+      
+      const FormData = require('form-data');
+      const formData = new FormData();
+      formData.append('file', imageBuffer, `${ticker}-ai-generated.png`);
+
+      console.log('📤 Uploading AI image to Cloudflare...');
+      
+      const cloudflareResponse = await axios.post(
+        `https://api.cloudflare.com/client/v4/accounts/${process.env.CLOUDFLARE_ACCOUNT_ID}/images/v1`,
+        formData,
+        {
+          headers: {
+            'Authorization': `Bearer ${process.env.CLOUDFLARE_API_KEY}`,
+            ...formData.getHeaders()
+          }
+        }
+      );
+
+      if (cloudflareResponse.data.success) {
+        const cloudflareUrl = cloudflareResponse.data.result.variants[0];
+        console.log('✅ AI image uploaded to Cloudflare:', cloudflareUrl);
+        
+        res.json({
+          success: true,
+          imageUrl: cloudflareUrl,
+          originalPrompt: enhancedPrompt,
+          message: "AI image generated and uploaded successfully"
+        });
+      } else {
+        console.error('❌ Cloudflare upload failed for AI image');
+        res.json({
+          success: true,
+          imageUrl: imageUrl, // Return OpenAI URL as fallback
+          message: "AI image generated successfully, but Cloudflare upload failed"
+        });
+      }
+    } else {
+      console.error('❌ OpenAI image generation failed:', openAIResponse.data);
+      res.status(500).json({
+        error: "Failed to generate AI image",
+        details: openAIResponse.data
+      });
+    }
+
+  } catch (error) {
+    console.error('❌ AI generation error:', error);
+    res.status(500).json({
+      error: "AI image generation failed",
+      message: error.message
+    });
   }
 });
 
