@@ -4,6 +4,7 @@ const express = require('express');
 const cors = require('cors');
 const helmet = require('helmet');
 const axios = require('axios');
+const multer = require('multer');
 require('dotenv').config();
 
 // Initialiser Firebase Admin
@@ -25,6 +26,18 @@ const FEE_CONNECTION = new Connection("https://api.devnet.solana.com", "confirme
 
 // Créer l'app Express
 const app = express();
+
+// Configuration multer pour les uploads (comme dans le code original)
+const upload = multer({
+  storage: multer.memoryStorage(),
+  limits: { fileSize: 5 * 1024 * 1024 }, // 5MB limit
+  fileFilter: (req, file, cb) => {
+    if (!file.mimetype.startsWith('image/')) {
+      return cb(new Error('Only image files allowed'));
+    }
+    cb(null, true);
+  }
+});
 
 // Middleware
 app.use(cors({ origin: true }));
@@ -62,6 +75,63 @@ async function verifyFeeTransaction(signature, userWalletPubkey) {
 // Health check
 app.get('/api/health', (req, res) => {
   res.json({ status: 'Firebase Functions OK', timestamp: new Date().toISOString() });
+});
+
+// Test endpoint pour vérifier les variables d'environnement
+app.get('/api/test-env', (req, res) => {
+  const hasCloudflareKey = !!process.env.CLOUDFLARE_API_KEY;
+  const hasCloudflareAccount = !!process.env.CLOUDFLARE_ACCOUNT_ID;
+  const hasOpenAIKey = !!process.env.OPENAI_API_KEY;
+  
+  console.log('🧪 Test env variables:');
+  console.log('- CLOUDFLARE_API_KEY:', hasCloudflareKey ? 'SET' : 'MISSING');
+  console.log('- CLOUDFLARE_ACCOUNT_ID:', hasCloudflareAccount ? 'SET' : 'MISSING');
+  console.log('- OPENAI_API_KEY:', hasOpenAIKey ? 'SET' : 'MISSING');
+  
+  res.json({
+    status: 'Environment test',
+    variables: {
+      CLOUDFLARE_API_KEY: hasCloudflareKey,
+      CLOUDFLARE_ACCOUNT_ID: hasCloudflareAccount,
+      OPENAI_API_KEY: hasOpenAIKey
+    },
+    cloudflareKeyPrefix: process.env.CLOUDFLARE_API_KEY ? process.env.CLOUDFLARE_API_KEY.substring(0, 8) + '...' : 'MISSING',
+    openaiKeyPrefix: process.env.OPENAI_API_KEY ? process.env.OPENAI_API_KEY.substring(0, 12) + '...' : 'MISSING'
+  });
+});
+
+// Test endpoint pour vérifier la clé OpenAI
+app.get('/api/test-openai', async (req, res) => {
+  try {
+    if (!process.env.OPENAI_API_KEY) {
+      return res.status(500).json({ error: 'OpenAI API key not configured' });
+    }
+
+    console.log('🧪 Testing OpenAI API key...');
+    
+    // Test simple avec l'API OpenAI
+    const testResponse = await axios.get('https://api.openai.com/v1/models', {
+      headers: {
+        'Authorization': `Bearer ${process.env.OPENAI_API_KEY}`,
+        'Content-Type': 'application/json'
+      }
+    });
+
+    res.json({
+      status: 'OpenAI API key is valid',
+      modelsCount: testResponse.data.data ? testResponse.data.data.length : 0,
+      keyPrefix: process.env.OPENAI_API_KEY.substring(0, 12) + '...'
+    });
+
+  } catch (error) {
+    console.error('❌ OpenAI API test failed:', error.response?.status, error.response?.data);
+    res.status(500).json({
+      error: 'OpenAI API key test failed',
+      status: error.response?.status,
+      message: error.response?.data?.error?.message || error.message,
+      keyPrefix: process.env.OPENAI_API_KEY ? process.env.OPENAI_API_KEY.substring(0, 12) + '...' : 'MISSING'
+    });
+  }
 });
 
 // ========== ENDPOINTS VIP ==========
@@ -422,72 +492,52 @@ app.post('/api/token', async (req, res) => {
   }
 });
 
-// ========== UPLOAD ENDPOINTS ==========
-app.post('/api/upload', async (req, res) => {
+// ========== UPLOAD ENDPOINTS ========== (Code original de smack-main)
+app.post('/api/upload', upload.single('image'), async (req, res) => {
   try {
     console.log('📤 Upload endpoint called');
     
-    if (!process.env.CLOUDFLARE_API_KEY || !process.env.CLOUDFLARE_ACCOUNT_ID) {
-      console.error('❌ Missing Cloudflare credentials');
-      return res.status(500).json({ 
-        error: "Cloudflare credentials not configured",
-        message: "Environment variables missing"
-      });
+    if (!req.file) {
+      return res.status(400).json({ error: "No image uploaded" });
     }
 
-    // For now, handle base64 image data from request body
-    const { imageData, fileName } = req.body;
-    
-    if (!imageData) {
-      return res.status(400).json({ 
-        error: "No image data provided",
-        message: "Please provide imageData in the request body"
-      });
-    }
+    console.log('📄 File received:', {
+      originalname: req.file.originalname,
+      mimetype: req.file.mimetype,
+      size: req.file.size
+    });
 
-    // Convert base64 to buffer
-    const buffer = Buffer.from(imageData.replace(/^data:image\/[a-z]+;base64,/, ''), 'base64');
-    
+    // File OK, upload to Cloudflare (exactement comme le code original)
     const FormData = require('form-data');
     const formData = new FormData();
-    formData.append('file', buffer, fileName || 'token-image.png');
+    // Name the file with a timestamp to avoid injection
+    const safeName = Date.now() + "-" + (req.file.originalname.replace(/[^a-zA-Z0-9.\-_]/g, "_"));
+    formData.append("file", req.file.buffer, safeName);
 
     console.log('🚀 Uploading to Cloudflare...');
-    
+
     const response = await axios.post(
       `https://api.cloudflare.com/client/v4/accounts/${process.env.CLOUDFLARE_ACCOUNT_ID}/images/v1`,
       formData,
       {
         headers: {
-          'Authorization': `Bearer ${process.env.CLOUDFLARE_API_KEY}`,
-          ...formData.getHeaders()
-        }
+          Authorization: `Bearer ${process.env.CLOUDFLARE_API_KEY}`,
+          ...formData.getHeaders(),
+        },
       }
     );
 
-    if (response.data.success) {
+    if (response.data && response.data.success) {
       const imageUrl = response.data.result.variants[0];
       console.log('✅ Image uploaded successfully:', imageUrl);
-      
-      res.json({
-        success: true,
-        imageUrl: imageUrl,
-        message: "Image uploaded successfully to Cloudflare"
-      });
+      return res.json({ imageUrl });
     } else {
       console.error('❌ Cloudflare upload failed:', response.data);
-      res.status(500).json({
-        error: "Failed to upload image to Cloudflare",
-        details: response.data.errors
-      });
+      return res.status(500).json({ error: "Cloudflare upload failed", details: response.data });
     }
-
-  } catch (error) {
-    console.error('❌ Upload error:', error);
-    res.status(500).json({
-      error: "Upload failed",
-      message: error.message
-    });
+  } catch (err) {
+    console.error('❌ Upload error:', err);
+    res.status(400).json({ error: err.message || "Upload error" });
   }
 });
 
